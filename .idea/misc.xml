@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavadocGenerationManager">
+    <!-- Update the OUTPUT_DIRECTORY value to the correct path -->
+    <option name="OUTPUT_DIRECTORY" value="$PROJECT_DIR$/out/IST412LMS_Javadoc" />
+    <option name="OPTION_SCOPE" value="private" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_18" default="true" project-jdk-name="openjdk-18" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+</project>
