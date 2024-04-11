@@ -6,9 +6,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import Database.DatabaseManager;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+
 
 public class AssignmentController {
-    private DatabaseManager dbManager;
+    private static DatabaseManager dbManager;
 
     public AssignmentController() {
         // Initialize the DatabaseManager with the path to your database file
@@ -53,22 +57,38 @@ public class AssignmentController {
         return null;
     }
 
-    public List<Assignment> getAllAssignments() {
+    public static List<Assignment> getAllAssignments() {
+        String url = "jdbc:sqlite:assignment_database.db";
         List<Assignment> assignments = new ArrayList<>();
+
         String sql = "SELECT * FROM assignments";
-        try {
-            ResultSet rs = dbManager.executeQuery(sql);
-            while (rs != null && rs.next()) {
-                assignments.add(new Assignment(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("due_date")
-                ));
+
+        try (Connection conn = DriverManager.getConnection(url);
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String description = rs.getString("description");
+                String dueDate = rs.getString("due_date");
+
+                assignments.add(new Assignment(id, name, description, dueDate));
             }
         } catch (SQLException e) {
-            System.out.println("Error fetching assignments: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
+
         return assignments;
+    }
+
+    public static void main(String[] args) {
+        List<Assignment> assignments = AssignmentController.getAllAssignments();
+        
+        // Example: Print fetched assignments
+        for (Assignment assignment : assignments) {
+            System.out.println("ID: " + assignment.getId() + ", Name: " + assignment.getName() + ", Due Date: " + assignment.getDueDate()
+             + ", Description: " + assignment.getDescription());
+        }
     }
 }

@@ -1,0 +1,26 @@
+// UserRepository.java
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUsername(String username);
+}
+// UserService.java
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public void registerUser(UserRegistrationRequest request) {
+        // Validate input
+        // Create user entity and save to the database
+    }
+
+    public User authenticateUser(UserLoginRequest request) {
+        // Validate input
+        // Retrieve user by username
+        // Verify credentials (compare hashed password)
+        // Return authenticated user or throw an exception
+    }
+}
