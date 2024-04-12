@@ -8,7 +8,6 @@ import java.util.List;
 public class Quiz {
     private int id;
     private int courseId;
-    private int grade;
     private String name;
     private String dueDate;
     private List<Question> questions; 
@@ -19,7 +18,6 @@ public class Quiz {
     public Quiz(int id, int courseId, int grade, String name, String dueDate, List<Question> questions) {
         this.id = id;
         this.courseId = courseId;
-        this.grade = grade;
         this.name = name;
         this.dueDate = dueDate;
         this.questions = questions;
@@ -47,15 +45,6 @@ public class Quiz {
      */
     public int getCourseId() {
         return courseId;
-    }
-
-    /**
-     * Gets the grade of the quiz.
-     * 
-     * @return The grade of the quiz.
-     */
-    public int getGrade() {
-        return grade;
     }
 
     /**

@@ -39,7 +39,6 @@ public class QuizView extends JPanel {
         if (quiz != null) { // Check if quiz is not null to avoid NullPointerException
             idLabel.setText("ID: " + quiz.getId());
             courseIdLabel.setText("Course ID: " + quiz.getCourseId());
-            gradeLabel.setText("Grade: " + quiz.getGrade());
         } else {
             // Set default text or clear labels if no quiz is retrieved
             idLabel.setText("ID: Not available");

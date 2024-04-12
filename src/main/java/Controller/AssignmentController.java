@@ -1,54 +1,71 @@
 package Controller;
 
 import Model.Assignment;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import Database.DatabaseManager;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-
 
 public class AssignmentController {
-    private static DatabaseManager dbManager;
-
-    public AssignmentController() {
-        // Initialize the DatabaseManager with the path to your database file
-        this.dbManager = new DatabaseManager("assignment_database.db");
-    }
+    private static final String HOSTNAME = "127.0.0.1";
+    private static final int PORT = 3306;
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "$Qqhollowpsu45";
+    private static final String DATABASE_NAME = "412 LMS"; // Replace "your_database_name" with your actual database name
+    private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME;
 
     public void addAssignment(Assignment assignment) {
-        String sql = "INSERT INTO assignments(name, description, due_date) VALUES(?,?,?)";
-        dbManager.executeUpdate(sql, assignment.getName(), assignment.getDescription(), assignment.getDueDate());
-        System.out.println("Assignment added successfully.");
+        String sql = "INSERT INTO Assignments(name, description, dueDate) VALUES(?,?,?)";
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, assignment.getName());
+            pstmt.setString(2, assignment.getDescription());
+            pstmt.setString(3, assignment.getDueDate());
+            pstmt.executeUpdate();
+            System.out.println("Assignment added successfully.");
+        } catch (SQLException e) {
+            System.out.println("Error adding assignment: " + e.getMessage());
+        }
     }
 
     public void removeAssignment(int id) {
-        String sql = "DELETE FROM assignments WHERE id = ?";
-        dbManager.executeUpdate(sql, id);
-        System.out.println("Assignment removed successfully.");
+        String sql = "DELETE FROM Assignments WHERE id = ?";
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+            System.out.println("Assignment removed successfully.");
+        } catch (SQLException e) {
+            System.out.println("Error removing assignment: " + e.getMessage());
+        }
     }
 
     public void updateAssignment(Assignment assignment) {
-        String sql = "UPDATE assignments SET name = ?, description = ?, due_date = ? WHERE id = ?";
-        dbManager.executeUpdate(sql, assignment.getName(), assignment.getDescription(), assignment.getDueDate(),
-                assignment.getId());
-        System.out.println("Assignment updated successfully.");
+        String sql = "UPDATE Assignments SET name = ?, description = ?, dueDate = ? WHERE id = ?";
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, assignment.getName());
+            pstmt.setString(2, assignment.getDescription());
+            pstmt.setString(3, assignment.getDueDate());
+            pstmt.setInt(4, assignment.getId());
+            pstmt.executeUpdate();
+            System.out.println("Assignment updated successfully.");
+        } catch (SQLException e) {
+            System.out.println("Error updating assignment: " + e.getMessage());
+        }
     }
 
     public Assignment getAssignment(int id) {
-        String sql = "SELECT * FROM assignments WHERE id = ?";
-        try {
-            ResultSet rs = dbManager.executeQuery(sql, id);
-            if (rs != null && rs.next()) {
+        String sql = "SELECT * FROM Assignments WHERE id = ?";
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
                 return new Assignment(
                         rs.getInt("id"),
                         rs.getString("name"),
                         rs.getString("description"),
-                        rs.getString("due_date")
-                // Assuming an ID field or constructor in Assignment for ID
+                        rs.getString("dueDate")
                 );
             }
         } catch (SQLException e) {
@@ -57,38 +74,33 @@ public class AssignmentController {
         return null;
     }
 
-    public static List<Assignment> getAllAssignments() {
-        String url = "jdbc:sqlite:assignment_database.db";
+    public List<Assignment> getAllAssignments() {
         List<Assignment> assignments = new ArrayList<>();
-
-        String sql = "SELECT * FROM assignments";
-
-        try (Connection conn = DriverManager.getConnection(url);
+        String sql = "SELECT * FROM Assignments";
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
-
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
                 String description = rs.getString("description");
-                String dueDate = rs.getString("due_date");
-
+                String dueDate = rs.getString("dueDate");
                 assignments.add(new Assignment(id, name, description, dueDate));
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error fetching assignments: " + e.getMessage());
         }
-
         return assignments;
     }
 
     public static void main(String[] args) {
-        List<Assignment> assignments = AssignmentController.getAllAssignments();
-        
+        AssignmentController controller = new AssignmentController();
+
         // Example: Print fetched assignments
+        List<Assignment> assignments = controller.getAllAssignments();
         for (Assignment assignment : assignments) {
             System.out.println("ID: " + assignment.getId() + ", Name: " + assignment.getName() + ", Due Date: " + assignment.getDueDate()
-             + ", Description: " + assignment.getDescription());
+                    + ", Description: " + assignment.getDescription());
         }
     }
 }
