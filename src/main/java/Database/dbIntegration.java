@@ -1,4 +1,4 @@
-package Model;
+package Database;
 
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -19,8 +19,8 @@ public class dbIntegration {
         ResultSet resultSet = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/newsPublish",
-                    "newuser", "testing");
+            connect = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/412LMS",
+                    "root", "$Qqhollowpsu45");
 
             // Statements allow to issue SQL queries to the database
             statement = connect.createStatement();
