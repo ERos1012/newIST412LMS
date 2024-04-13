@@ -47,7 +47,7 @@ public class AssignmentController {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            String sql = "UPDATE Assignments SET name = ?, description = ?, due_date = ? WHERE id = ?";
+            String sql = "UPDATE Assignments SET name = ?, description = ?, dueDate = ? WHERE id = ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, assignment.getName());
             pstmt.setString(2, assignment.getDescription());
@@ -71,7 +71,7 @@ public class AssignmentController {
                             rs.getInt("id"),
                             rs.getString("name"),
                             rs.getString("description"),
-                            rs.getString("due_date"),
+                            rs.getString("dueDate"),
                             rs.getBoolean("isActive") // Fetch the isActive column
                     );
                     assignments.add(assignment);
@@ -109,11 +109,26 @@ public class AssignmentController {
 //        readAllAssignments();
 //    }
 
-    private static void readAllAssignments() {
-        List<Assignment> assignments = getAllAssignments();
-        for (Assignment assignment : assignments) {
-            System.out.println("ID: " + assignment.getId() + ", Name: " + assignment.getName() +
-                    ", Due Date: " + assignment.getDueDate() + ", Description: " + assignment.getDescription());
+    public List<Assignment> getActiveAssignments() {
+        List<Assignment> activeAssignments = new ArrayList<>();
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+            String sql = "SELECT * FROM Assignments WHERE isActive = 1";
+            try (Statement stmt = con.createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
+                while (rs.next()) {
+                    Assignment assignment = new Assignment(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("description"),
+                            rs.getString("dueDate"),
+                            rs.getBoolean("isActive")
+                    );
+                    activeAssignments.add(assignment);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching active assignments: " + e.getMessage());
         }
+        return activeAssignments;
     }
 }

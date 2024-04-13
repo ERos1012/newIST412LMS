@@ -103,7 +103,7 @@ public class MainView extends JFrame {
 
         // Frame properties
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(700, 400);
+        setSize(800, 400);
         setLocationRelativeTo(null); // Center the frame on the screen
     }
 

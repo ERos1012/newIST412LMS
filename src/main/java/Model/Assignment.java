@@ -16,7 +16,11 @@ public class Assignment {
         this.isActive = isActive;
     }
 
-    
+    public Assignment() {
+
+    }
+
+
     /** 
      * @return String
      */
@@ -34,5 +38,22 @@ public class Assignment {
 
     public int getId() {
         return id;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public void setDescription(String description){
+        this.description = description;
+    }
+
+    public void setDueDate(String dueDate){
+        this.dueDate = dueDate;
+    }
+
+    public void setId(int id){
+        this.id = id;
     }
 }
