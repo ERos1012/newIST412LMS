@@ -10,7 +10,7 @@ public class AssignmentController {
     private static final int PORT = 3306;
     private static final String USERNAME = "root";
     private static final String PASSWORD = "$Qqhollowpsu45";
-    private static final String DATABASE_NAME = "412 LMS"; // Replace "your_database_name" with your actual database name
+    private static final String DATABASE_NAME = "412 LMS"; 
     private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME;
 
     public void addAssignment(Assignment assignment) {

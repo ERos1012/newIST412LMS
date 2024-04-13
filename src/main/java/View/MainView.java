@@ -2,6 +2,9 @@
 package View;
 
 import javax.swing.*;
+
+import Controller.AssignmentController;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +35,7 @@ public class MainView extends JFrame {
         JButton gradeButton = new JButton("Grade");
         JButton messageButton = new JButton("Message");
         JButton quizButton = new JButton("Quiz");
+        JButton newAssignmentButton = new JButton("New Assignment");
 
         // Add buttons to the navigation panel
         navigationPanel.add(dashboardButton);
@@ -40,8 +44,7 @@ public class MainView extends JFrame {
         navigationPanel.add(gradeButton);
         navigationPanel.add(messageButton);
         navigationPanel.add(quizButton);
-
-        navigationPanel.setVisible(false);
+        navigationPanel.add(newAssignmentButton);
 
         // Create a LoginView instance
         LoginView loginView = new LoginView();
@@ -55,6 +58,8 @@ public class MainView extends JFrame {
                 navigationPanel.setVisible(true);
             }
         });
+ 
+         navigationPanel.setVisible(false);
 
         // Add LoginView to the cardsPanel
         cardsPanel.add(loginView, "Login");
@@ -78,6 +83,9 @@ public class MainView extends JFrame {
         JPanel quizView = new QuizView();
         cardsPanel.add(quizView, "Quiz");
 
+        JPanel newAssignmentView = new AssignmentListView(new AssignmentController());
+        cardsPanel.add(newAssignmentView, "New Assignment");
+
 
         // Action listeners for buttons to switch views
         dashboardButton.addActionListener(e -> cardLayout.show(cardsPanel, "Dashboard"));
@@ -86,6 +94,7 @@ public class MainView extends JFrame {
         gradeButton.addActionListener(e -> cardLayout.show(cardsPanel, "Grade"));
         messageButton.addActionListener(e -> cardLayout.show(cardsPanel, "Message"));
         quizButton.addActionListener(e -> cardLayout.show(cardsPanel, "Quiz"));
+        newAssignmentButton.addActionListener(e -> cardLayout.show(cardsPanel, "New Assignment"));
 
         // Layout setup for the main frame
         setLayout(new BorderLayout());
