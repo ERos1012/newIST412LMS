@@ -13,6 +13,7 @@ public class AssignmentListView extends JPanel {
     private DefaultListModel<Assignment> listModel;
     private JTable activeCoursesTable;
     private DefaultTableModel activeCoursesTableModel;
+    private JTextField idField;
 
     public AssignmentListView(AssignmentController manager) {
         this.manager = manager;
@@ -34,6 +35,7 @@ public class AssignmentListView extends JPanel {
         buttonPanel.add(updateButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
+
         // Add button action
         addButton.addActionListener(e -> showAssignmentDialog(null));
 
@@ -42,11 +44,31 @@ public class AssignmentListView extends JPanel {
 
         // Update button action
         updateButton.addActionListener(e -> {
-            Assignment selected = assignmentJList.getSelectedValue();
-            if (selected != null) {
-                showAssignmentDialog(selected);
+            // Create a dialog to enter the assignment ID
+            JTextField idField = new JTextField(10);
+            JPanel idPanel = new JPanel();
+            idPanel.add(new JLabel("ID:"));
+            idPanel.add(idField);
+
+            int result = JOptionPane.showConfirmDialog(this, idPanel, "Enter Assignment ID", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) {
+                String idText = idField.getText().trim();
+                if (!idText.isEmpty()) {
+                    int id = Integer.parseInt(idText);
+                    Assignment assignment = manager.getAssignment(id);
+                    if (assignment != null) {
+                        showAssignmentDialog(assignment);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Assignment not found!", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Please enter Assignment ID!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
+
+
+
 
         // Panel to display active courses
         JPanel activeCoursesPanel = new JPanel(new BorderLayout());

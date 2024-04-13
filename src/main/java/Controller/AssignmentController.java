@@ -131,4 +131,25 @@ public class AssignmentController {
         }
         return activeAssignments;
     }
+    public Assignment getAssignment(int id) {
+        String sql = "SELECT * FROM Assignments WHERE id = ?";
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Assignment(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("description"),
+                            rs.getString("dueDate"),
+                            rs.getBoolean("isActive")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching assignment: " + e.getMessage());
+        }
+        return null;
+    }
 }
