@@ -31,14 +31,13 @@ public class AssignmentController {
     }
 
     public static void removeAssignment(int id) {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            String sql = "DELETE FROM Assignments WHERE id = ?";
-            PreparedStatement pstmt = con.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
-            System.out.println("Assignment removed successfully.");
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+            String sql = "UPDATE Assignments SET isActive = 0 WHERE id = ?";
+            try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+                pstmt.setInt(1, id);
+                pstmt.executeUpdate();
+                System.out.println("Assignment flagged as inactive.");
+            }
         } catch (Exception e) {
             System.out.println("Error removing assignment: " + e.getMessage());
         }
@@ -63,20 +62,20 @@ public class AssignmentController {
 
     public static List<Assignment> getAllAssignments() {
         List<Assignment> assignments = new ArrayList<>();
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
             String sql = "SELECT * FROM Assignments";
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                Assignment assignment = new Assignment(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("due_date")
-                );
-                assignments.add(assignment);
+            try (Statement stmt = con.createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
+                while (rs.next()) {
+                    Assignment assignment = new Assignment(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("description"),
+                            rs.getString("due_date"),
+                            rs.getBoolean("isActive") // Fetch the isActive column
+                    );
+                    assignments.add(assignment);
+                }
             }
         } catch (Exception e) {
             System.out.println("Error fetching assignments: " + e.getMessage());

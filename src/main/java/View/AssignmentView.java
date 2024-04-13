@@ -65,7 +65,8 @@ public class AssignmentView extends JPanel {
                 String name = nameTextField.getText();
                 String description = descriptionTextField.getText();
                 String dueDate = dueDateTextField.getText();
-                Assignment newAssignment = new Assignment(id, name, description, dueDate);
+                boolean isActive = true;
+                Assignment newAssignment = new Assignment(id, name, description, dueDate, isActive);
                 assignmentController.addAssignment(newAssignment);
             }
         });
@@ -82,7 +83,8 @@ public class AssignmentView extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 // Call method to update assignment
                 int id = 0; // Assuming id is 0 for now
-                assignmentController.updateAssignment(new Assignment(id, nameTextField.getText(), descriptionTextField.getText(), dueDateTextField.getText()));
+                boolean isActive = true;
+                assignmentController.updateAssignment(new Assignment(id, nameTextField.getText(), descriptionTextField.getText(), dueDateTextField.getText(), isActive));
             }
         });
 
