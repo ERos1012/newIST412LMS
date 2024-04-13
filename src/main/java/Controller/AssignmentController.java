@@ -30,19 +30,6 @@ public class AssignmentController {
         }
     }
 
-//    public static void addAssignment(Assignment assignment){
-//        try{
-//            //here School is database name, root is username and password
-//            Class.forName("com.mysql.cj.jdbc.Driver");
-//            Connection con=DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/412 LMS","root","$Qqhollowpsu45");
-//            Statement stmt=con.createStatement();
-//            stmt.executeUpdate("Insert into Assignments "
-//                    + "(name, description, dueDate) "
-//                    + "VALUES (" + assignment.getName() + ",'" + assignment.getDescription() + "',"
-//                    + assignment.getDueDate() + ");");
-//        }catch(Exception e){ System.out.println(e);}
-//    }
-
     public static void removeAssignment(int id) {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
