@@ -1,9 +1,8 @@
 package View;
 
 import javax.swing.*;
-
+import javax.swing.table.DefaultTableModel;
 import Controller.AssignmentController;
-
 import java.awt.*;
 import java.util.List;
 import Model.Assignment;
@@ -12,6 +11,9 @@ public class AssignmentListView extends JPanel {
     private AssignmentController manager;
     private JList<Assignment> assignmentJList;
     private DefaultListModel<Assignment> listModel;
+    private JTable activeCoursesTable;
+    private DefaultTableModel activeCoursesTableModel;
+    private JTextField idField;
 
     public AssignmentListView(AssignmentController manager) {
         this.manager = manager;
@@ -21,11 +23,6 @@ public class AssignmentListView extends JPanel {
     }
 
     private void initializeUI() {
-        // List to display assignments
-        assignmentJList = new JList<>(listModel);
-        assignmentJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane scrollPane = new JScrollPane(assignmentJList);
-        add(scrollPane, BorderLayout.CENTER);
 
         // Panel for buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -38,27 +35,53 @@ public class AssignmentListView extends JPanel {
         buttonPanel.add(updateButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
+
         // Add button action
         addButton.addActionListener(e -> showAssignmentDialog(null));
 
         // Remove button action
-        removeButton.addActionListener(e -> {
-            Assignment selected = assignmentJList.getSelectedValue();
-            if (selected != null) {
-                manager.removeAssignment(selected.getId());
-                refreshAssignmentList();
-            }
-        });
+        removeButton.addActionListener(e -> showRemoveAssignmentDialog());
 
         // Update button action
         updateButton.addActionListener(e -> {
-            Assignment selected = assignmentJList.getSelectedValue();
-            if (selected != null) {
-                showAssignmentDialog(selected);
+            // Create a dialog to enter the assignment ID
+            JTextField idField = new JTextField(10);
+            JPanel idPanel = new JPanel();
+            idPanel.add(new JLabel("ID:"));
+            idPanel.add(idField);
+
+            int result = JOptionPane.showConfirmDialog(this, idPanel, "Enter Assignment ID", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) {
+                String idText = idField.getText().trim();
+                if (!idText.isEmpty()) {
+                    int id = Integer.parseInt(idText);
+                    Assignment assignment = manager.getAssignment(id);
+                    if (assignment != null) {
+                        showAssignmentDialog(assignment);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Assignment not found!", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Please enter Assignment ID!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
-        
+
+
+
+
+        // Panel to display active courses
+        JPanel activeCoursesPanel = new JPanel(new BorderLayout());
+        activeCoursesTableModel = new DefaultTableModel();
+        activeCoursesTableModel.addColumn("ID");
+        activeCoursesTableModel.addColumn("Name");
+        activeCoursesTableModel.addColumn("Due Date");
+        activeCoursesTable = new JTable(activeCoursesTableModel);
+        activeCoursesPanel.add(new JScrollPane(activeCoursesTable), BorderLayout.CENTER);
+        add(activeCoursesPanel, BorderLayout.CENTER);
+
         refreshAssignmentList();
+        refreshActiveCoursesTable();
     }
 
     private void showAssignmentDialog(Assignment assignment) {
@@ -66,7 +89,7 @@ public class AssignmentListView extends JPanel {
         JTextField nameField = new JTextField(assignment != null ? assignment.getName() : "", 20);
         JTextField descField = new JTextField(assignment != null ? assignment.getDescription() : "", 20);
         JTextField dateField = new JTextField(assignment != null ? assignment.getDueDate() : "", 20);
-    
+
         // Set up the panel to get user input
         JPanel dialogPanel = new JPanel(new GridLayout(0, 2));
         dialogPanel.add(new JLabel("Name:"));
@@ -75,12 +98,12 @@ public class AssignmentListView extends JPanel {
         dialogPanel.add(descField);
         dialogPanel.add(new JLabel("Due Date:"));
         dialogPanel.add(dateField);
-    
+
         // Show a confirm dialog to get user input
-        int result = JOptionPane.showConfirmDialog(this, dialogPanel, 
-                assignment != null ? "Update Assignment" : "Add Assignment", 
+        int result = JOptionPane.showConfirmDialog(this, dialogPanel,
+                assignment != null ? "Update Assignment" : "Add Assignment",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-    
+
         if (result == JOptionPane.OK_OPTION) {
             if (assignment == null) {
                 // Create a new Assignment object with the input data
@@ -100,14 +123,54 @@ public class AssignmentListView extends JPanel {
             }
             // Refresh the list to show changes
             refreshAssignmentList();
+            refreshActiveCoursesTable();
         }
     }
-    
+
+    private void showRemoveAssignmentDialog() {
+        // Text field to input assignment ID
+        JTextField idField = new JTextField(10);
+
+        // Set up the panel to get user input
+        JPanel dialogPanel = new JPanel(new GridLayout(0, 2));
+        dialogPanel.add(new JLabel("Assignment ID:"));
+        dialogPanel.add(idField);
+
+        // Show a confirm dialog to get user input
+        int result = JOptionPane.showConfirmDialog(this, dialogPanel,
+                "Remove Assignment", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            // Get the ID entered by the user
+            int assignmentId;
+            try {
+                assignmentId = Integer.parseInt(idField.getText());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid assignment ID.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Remove the assignment with the entered ID
+            manager.removeAssignment(assignmentId);
+            refreshAssignmentList();
+            refreshActiveCoursesTable();
+        }
+    }
+
+
     private void refreshAssignmentList() {
         listModel.removeAllElements();
         List<Assignment> assignments = manager.getAllAssignments();
         for (Assignment assignment : assignments) {
             listModel.addElement(assignment);
+        }
+    }
+
+    private void refreshActiveCoursesTable() {
+        activeCoursesTableModel.setRowCount(0); // Clear existing rows
+        List<Assignment> activeAssignments = manager.getActiveAssignments(); // Assuming a method in AssignmentController to fetch active assignments
+        for (Assignment assignment : activeAssignments) {
+            activeCoursesTableModel.addRow(new Object[] {assignment.getId(), assignment.getName(), assignment.getDueDate()});
         }
     }
 }

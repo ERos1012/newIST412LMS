@@ -6,22 +6,21 @@ public class Assignment {
     private String description;
     private String dueDate;
     private int id;
+    private boolean isActive;
 
-    public Assignment(){
-        this.name = "";
-        this.description = "";
-        this.dueDate = "";
-        this.id = 0;
-    }
-
-    public Assignment(int id, String name, String description, String dueDate) {
+    public Assignment(int id, String name, String description, String dueDate, boolean isActive) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.dueDate = dueDate;
+        this.isActive = isActive;
     }
 
-    
+    public Assignment() {
+
+    }
+
+
     /** 
      * @return String
      */
@@ -41,20 +40,20 @@ public class Assignment {
         return id;
     }
 
-    public void setName(String name) {
+    public void setName(String name)
+    {
         this.name = name;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(String description){
         this.description = description;
     }
 
-    public void setDueDate(String dueDate) {
+    public void setDueDate(String dueDate){
         this.dueDate = dueDate;
     }
 
-    public void setId(int id) {
+    public void setId(int id){
         this.id = id;
     }
-    
 }
