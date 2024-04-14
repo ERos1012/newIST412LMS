@@ -1,57 +1,41 @@
 package Controller;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class LoginController {
     private static final String HOSTNAME = "localhost";
     private static final int PORT = 3306;
     private static final String USERNAME = "root";
     private static final String PASSWORD = "$Qqhollowpsu45";
-    private static final String DATABASE_NAME = "your_database_name";
+    private static final String DATABASE_NAME = "412 LMS";
     private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME;
 
     public boolean matchUsernamePassword(String username, String password) {
-        // Load the MySQL JDBC driver
         try {
+            // Load the MySQL JDBC driver
             Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("MySQL JDBC Driver not found.");
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found");
+            e.printStackTrace();
             return false;
         }
 
-        String sql = "SELECT id FROM Authentication WHERE username = ? AND password = ?";
-        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setString(1, username);
-            pstmt.setString(2, password);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    // Username and password match, return true
-                    return true;
+        String query = "SELECT * FROM Authentication WHERE username = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, username);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    // Username found, check if the password matches
+                    if (resultSet.getString("password").equals(password)) {
+                        return true; // Return true if the password matches
+                    }
                 }
             }
-        } catch (SQLException ex) {
-            System.out.println("Error matching username and password: " + ex.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle any SQL exceptions
         }
-        // Username and password do not match, or an error occurred
-        return false;
-    }
-
-    public static void main(String[] args) {
-        // Example usage
-        LoginController loginController = new LoginController();
-        String username = "example_username";
-        String password = "example_password";
-        boolean isValid = loginController.matchUsernamePassword(username, password);
-        if (isValid) {
-            System.out.println("Username and password are valid.");
-        } else {
-            System.out.println("Invalid username or password.");
-        }
+        return false; // Return false if no matching username or password found
     }
 }
 

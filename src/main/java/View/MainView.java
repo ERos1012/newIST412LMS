@@ -4,6 +4,7 @@ package View;
 import javax.swing.*;
 
 import Controller.AssignmentController;
+import Controller.LoginController;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -47,7 +48,8 @@ public class MainView extends JFrame {
         navigationPanel.add(newAssignmentButton);
 
         // Create a LoginView instance
-        LoginView loginView = new LoginView();
+        LoginController loginController = new LoginController();
+        LoginView loginView = new LoginView(loginController);
 
         // Set action listener for successful login
         loginView.setLoginListener(new ActionListener() {
