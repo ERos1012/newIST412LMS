@@ -1,7 +1,9 @@
-
 package View;
 
+import Controller.LoginController;
+
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -12,8 +14,11 @@ public class LoginView extends JPanel {
     private JPasswordField passwordField;
     private JButton loginButton;
     private ActionListener loginListener; // Declaration of loginListener field
+    private LoginController loginController;
 
-    public LoginView() {
+    public LoginView(LoginController loginController) {
+        this.loginController = loginController;
+
         // Initialize components
         usernameLabel = new JLabel("Username:");
         usernameTextField = new JTextField(20);
@@ -31,10 +36,12 @@ public class LoginView extends JPanel {
         // Add action listener to login button
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Simulate login (Replace this with your actual login logic)
+                // Get username and password from text fields
                 String username = usernameTextField.getText();
                 String password = new String(passwordField.getPassword());
-                if (isValidLogin(username, password)) {
+
+                // Call loginController method to check authentication
+                if (loginController.matchUsernamePassword(username, password)) {
                     // If login successful, notify listener
                     if (loginListener != null) {
                         loginListener.actionPerformed(e);
@@ -50,11 +57,5 @@ public class LoginView extends JPanel {
     // Setter for login listener
     public void setLoginListener(ActionListener listener) {
         this.loginListener = listener;
-    }
-
-    // Simulates login validation
-    private boolean isValidLogin(String username, String password) {
-        // Replace this with your actual login logic
-        return username.equals("admin") && password.equals("password");
     }
 }
