@@ -8,7 +8,7 @@ import Model.Message;
 /**
  * The MessageView class represents a graphical user interface for displaying message details.
  */
-public class MessageView extends JPanel {
+public class MessageView extends JFrame{
     private JLabel idLabel;
     private JLabel senderIdLabel;
     private JLabel receiverIdLabel;
@@ -46,6 +46,7 @@ public class MessageView extends JPanel {
         // Retrieve message details from the controller and update labels
         updateMessageDetails();
     }
+
 
     /**
      * Updates the labels with message details.
