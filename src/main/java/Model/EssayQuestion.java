@@ -21,4 +21,9 @@ public class EssayQuestion extends Question {
             pstmt.executeUpdate();
         }
     }
+
+    @Override
+    public String getText() {
+        return text;
+    }
 }

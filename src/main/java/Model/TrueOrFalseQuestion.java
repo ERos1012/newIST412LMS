@@ -22,4 +22,13 @@ public class TrueOrFalseQuestion extends Question {
             pstmt.executeUpdate();
         }
     }
+
+    @Override
+    public String getText() {
+        return text;
+    }
+
+    public String getCorrectAnswer() {
+        return correctAnswer;
+    }
 }

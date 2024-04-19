@@ -31,4 +31,31 @@ public class MultipleChoiceQuestion extends Question {
             pstmt.executeUpdate();
         }
     }
+
+    @Override
+    public String getText() {
+        return text;
+    }
+
+    public String getChoiceA() {
+        return choiceA;
+    }
+
+    public String getChoiceB() {
+        return choiceB;
+    }
+
+    public String getChoiceC() {
+        return choiceC;
+    }
+
+    public String getChoiceD() {
+        return choiceD;
+    }
+
+    public String getCorrectAnswer() {
+        return correctAnswer;
+    }
+
+    
 }

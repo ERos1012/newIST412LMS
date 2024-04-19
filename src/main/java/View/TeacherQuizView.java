@@ -3,10 +3,10 @@ package View;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-
 import Controller.QuizController;
 import Model.Quiz;
+
+import java.util.List;
 
 public class TeacherQuizView extends JFrame {
     private JList<Quiz> quizList;
@@ -22,6 +22,7 @@ public class TeacherQuizView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         initializeUI();
+        loadQuizzes();
     }
 
     private void initializeUI() {
@@ -44,20 +45,25 @@ public class TeacherQuizView extends JFrame {
         buttonPanel.add(updateQuizButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        add(quizScrollPane, BorderLayout.NORTH);
-
-        loadQuizzes();
+        add(quizScrollPane, BorderLayout.CENTER);
     }
 
     private void navigateToCreateQuiz(ActionEvent e) {
-        new QuizCreationView(quizController, quiz).setVisible(true);
+        QuizCreationView creationView = new QuizCreationView(quizController);
+        creationView.setVisible(true);
+        creationView.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+                loadQuizzes();
+            }
+        });
     }
 
     private void removeSelectedQuiz(ActionEvent e) {
         Quiz selectedQuiz = quizList.getSelectedValue();
         if (selectedQuiz != null) {
-            quizListModel.removeElement(selectedQuiz);
             quizController.removeQuiz(selectedQuiz);
+            loadQuizzes(); // Reload quizzes after removal
             JOptionPane.showMessageDialog(this, "Quiz removed: " + selectedQuiz.getName(), "Remove Quiz",
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -71,6 +77,12 @@ public class TeacherQuizView extends JFrame {
         if (selectedQuiz != null) {
             QuizCreationView updateView = new QuizCreationView(quizController, selectedQuiz);
             updateView.setVisible(true);
+            updateView.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+                    loadQuizzes();
+                }
+            });
         } else {
             JOptionPane.showMessageDialog(this, "No quiz selected to update!", "Update Quiz",
                     JOptionPane.WARNING_MESSAGE);
@@ -79,16 +91,14 @@ public class TeacherQuizView extends JFrame {
 
     private void loadQuizzes() {
         quizListModel.removeAllElements();
-        Quiz quiz1 = new Quiz(1, 2, "Math Basics", "2024-05-01", new ArrayList<>());
-        Quiz quiz2 = new Quiz(2, 2, "History 101", "2024-06-15", new ArrayList<>());
-        Quiz quiz3 = new Quiz(3, 3, "Science Fundamentals", "2024-07-20", new ArrayList<>());
-        quizListModel.addElement(quiz1);
-        quizListModel.addElement(quiz2);
-        quizListModel.addElement(quiz3);
+        List<Quiz> quizzes = quizController.getAllQuizzes();
+        for (Quiz quiz : quizzes) {
+            quizListModel.addElement(quiz);
+        }
     }
 
     public static void main(String[] args) {
-        QuizController controller = new QuizController(); // Ensure this controller is properly instantiated
+        QuizController controller = new QuizController(); // Make sure this is properly implemented
         TeacherQuizView frame = new TeacherQuizView(controller);
         frame.setVisible(true);
     }

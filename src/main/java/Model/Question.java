@@ -11,4 +11,6 @@ public abstract class Question {
     }
 
     public abstract void addQuestionToDatabase(Connection con, int quizId) throws SQLException;
+
+    public abstract String getText();
 }

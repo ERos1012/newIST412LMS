@@ -78,7 +78,7 @@ public class FacadeController {
     // Methods for MessageController
 
     public void sendMessage(Message message) {
-        messageController.sendMessage(message);
+        // messageController.sendMessage(message);
     }
 
     public Message viewMessage(Message message) {

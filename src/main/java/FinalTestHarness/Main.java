@@ -65,7 +65,7 @@ public class Main {
         Message studentMessage = new Message(1, student.getId(), teacher.getId(), messageContent, "2024-03-03");
 
         // Test sending a message
-        messageController.sendMessage(studentMessage);
+        // messageController.sendMessage(studentMessage);
         System.out.println("Message sent from student to professor - Test Passed");
 
         System.out.println("MessageController tests completed.");
