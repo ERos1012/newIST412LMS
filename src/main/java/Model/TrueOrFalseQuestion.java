@@ -1,53 +1,25 @@
 package Model;
 
-public class TrueOrFalseQuestion implements Question{
-    private String questionText;
-    private boolean answer;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-    public TrueOrFalseQuestion(String questionText, boolean answer) {
-        this.questionText = questionText;
-        this.answer = answer;
+public class TrueOrFalseQuestion extends Question {
+    private String correctAnswer;
+
+    public TrueOrFalseQuestion(String text, String correctAnswer) {
+        super(text);
+        this.correctAnswer = correctAnswer;
     }
 
     @Override
-    public String displayQuestion() {
-        return "True or False: " + questionText;
-    }
-
-    // Getters and setters
-    public String getQuestionText() {
-        return questionText;
-    }
-
-    public void setQuestionText(String questionText) {
-        this.questionText = questionText;
-    }
-
-    public boolean getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(boolean answer) {
-        this.answer = answer;
-    }
-
-    @Override
-    public String getType() {
-        return "True or False";
-    }
-
-    @Override
-    public String getText() {
-        return questionText;
-    }
-
-    @Override
-    public String getCorrectAnswer() {
-        return null;
-    }
-
-    @Override
-    public void setAnswer(String answer) {
-        // Do nothing
+    public void addQuestionToDatabase(Connection con, int quizId) throws SQLException {
+        String sql = "INSERT INTO quiz_questions (quiz_id, question_text, type, correct_answer) VALUES (?, ?, 'True/False', ?);";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setInt(1, quizId);
+            pstmt.setString(2, text);
+            pstmt.setString(3, correctAnswer);
+            pstmt.executeUpdate();
+        }
     }
 }

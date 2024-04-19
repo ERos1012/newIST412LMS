@@ -79,9 +79,21 @@ public class QuizController {
      * Updates an existing quiz in the system.
      */
     public void updateQuiz(Quiz quiz) {
-        System.out.println("Quiz updated: " + quiz.getName() + " " + quiz.getId() + " " + quiz.getDueDate() + " " + quiz.getQuestions());
+        final String sql = "UPDATE quizzes SET name = ?, due_date = ? WHERE id = ?;";
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, quiz.getName());
+            pstmt.setString(2, quiz.getDueDate());
+            pstmt.setInt(3, quiz.getId());
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("Quiz updated successfully: " + quiz.getName());
+            }
+        } catch (SQLException e) {
+            System.err.println("Error updating quiz: " + e.getMessage());
+        }
     }
-
+    
     /**
      * Views details of a specific quiz.
      */
@@ -98,9 +110,50 @@ public class QuizController {
      * @param course
      * @return
      */
-    public List<Quiz> getAllQuizzes(){
-        return List.of();
+    public List<Quiz> getAllQuizzes() {
+        List<Quiz> quizzes = new ArrayList<>();
+        // Include 'course_id' in your SQL query to match the Quiz constructor requirements
+        final String sql = "SELECT id, course_id, name, due_date FROM quizzes;";
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                // Fetching questions for each quiz ID using a hypothetical method 'getQuestionsForQuizId'
+                List<Question> questions = getQuestionsForQuizId(rs.getInt("id"));
+                // Now correctly using the constructor with all required fields
+                Quiz quiz = new Quiz(
+                    rs.getInt("id"),
+                    rs.getInt("course_id"),
+                    rs.getString("name"),
+                    rs.getString("due_date"),
+                    questions
+                );
+                quizzes.add(quiz);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching quizzes: " + e.getMessage());
+        }
+        return quizzes;
     }
+    
+    private List<Question> getQuestionsForQuizId(int quizId) {
+        List<Question> questions = new ArrayList<>();
+        final String questionSql = "SELECT question_text, correct_answer FROM quiz_questions WHERE quiz_id = ?";
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement(questionSql)) {
+            pstmt.setInt(1, quizId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    // Assuming the 'Question' class has a suitable constructor
+                    questions.add(new Question(rs.getString("question_text"), rs.getString("correct_answer")));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching questions for quiz: " + e.getMessage());
+        }
+        return questions;
+    }
+    
 
     /**
      * Assigns a grade to a quiz for a student
@@ -108,12 +161,5 @@ public class QuizController {
     public void gradeQuiz(int studentId, int courseId, int quizId, int grade)
     {
         System.out.println("Quiz graded: --> " + "Student number " + studentId + " has a grade of " + grade);
-    }
-
-    /**
-     * Gets all questions for a specific quiz.
-     */
-    public List<String> getQuestionsForQuiz(String quizName) {
-        return quizzes.getOrDefault(quizName, new ArrayList<>());
     }
 }
