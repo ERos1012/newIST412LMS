@@ -1,5 +1,6 @@
 package Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,12 +16,12 @@ public class Quiz {
     /**
      * Constructs a new Quiz object with the specified details.
      */
-    public Quiz(int id, int courseId, int grade, String name, String dueDate, List<Question> questions) {
+    public Quiz(int id, int courseId, String name, String dueDate, List<Question> questions) {
         this.id = id;
         this.courseId = courseId;
         this.name = name;
         this.dueDate = dueDate;
-        this.questions = questions;
+        this.questions = (questions == null) ? new ArrayList<>() : questions; // Ensure list is never null
     }
     
     // Getter methods remain unchanged, but getQuestions now returns List<Question>
@@ -63,5 +64,15 @@ public class Quiz {
      */
     public String getDueDate() {
         return dueDate;
+    }
+
+    @Override
+    public String toString() {
+        return name; // Or any other string format that you prefer
+    }
+
+    public void setId(int int1) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setId'");
     }
 }

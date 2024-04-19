@@ -37,4 +37,25 @@ public class MultipleChoiceQuestion implements Question{
     public void setOptions(List<String> options) {
         this.options = options;
     }
+
+    @Override
+    public String getType() {
+        return "Multiple Choice";
+    }
+
+    @Override
+    public String getText() {
+        return questionText;
+    }
+
+    @Override
+    public String getCorrectAnswer() {
+        return null;
+    }
+
+    @Override
+    public void setAnswer(String answer) {
+        // Do nothing
+    }
+    
 }

@@ -5,6 +5,7 @@ import javax.swing.*;
 
 import Controller.AssignmentController;
 import Controller.LoginController;
+import Controller.QuizController;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -85,7 +86,7 @@ public class MainView extends JFrame {
         JPanel quizView = new QuizView();
         cardsPanel.add(quizView, "Quiz");
 
-        JPanel newAssignmentView = new AssignmentListView(new AssignmentController());
+        JPanel newAssignmentView = new TeacherAssignmentView(new AssignmentController());
         cardsPanel.add(newAssignmentView, "New Assignment");
 
 

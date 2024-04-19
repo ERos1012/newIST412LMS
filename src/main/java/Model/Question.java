@@ -6,4 +6,13 @@ package Model;
 public interface Question {
     String displayQuestion();
 
+    String getType();
+
+    String getText();
+
+    String getCorrectAnswer();
+
+    void setAnswer(String answer);
+
+
 }

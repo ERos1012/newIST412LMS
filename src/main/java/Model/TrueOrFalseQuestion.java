@@ -30,4 +30,24 @@ public class TrueOrFalseQuestion implements Question{
     public void setAnswer(boolean answer) {
         this.answer = answer;
     }
+
+    @Override
+    public String getType() {
+        return "True or False";
+    }
+
+    @Override
+    public String getText() {
+        return questionText;
+    }
+
+    @Override
+    public String getCorrectAnswer() {
+        return null;
+    }
+
+    @Override
+    public void setAnswer(String answer) {
+        // Do nothing
+    }
 }

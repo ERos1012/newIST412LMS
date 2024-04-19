@@ -4,6 +4,7 @@ import Model.Assignment;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.File;
 
 public class AssignmentController {
 
@@ -151,5 +152,9 @@ public class AssignmentController {
             System.out.println("Error fetching assignment: " + e.getMessage());
         }
         return null;
+    }
+
+    public void submitAssignment(int assignmentId, File attachedFile) {
+        // Code to handle assignment submission
     }
 }

@@ -1,52 +1,24 @@
 package Model;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /**
  * Represents an essay question, which requires a text-based answer.
  */
-public class EssayQuestion implements Question {
-    private String questionText;
-    private String modelAnswer; // Optional, could be used for grading or as a sample answer
-
-    /**
-     * Constructs an EssayQuestion with the specified question text.
-     * @param questionText The text of the essay question.
-     */
-    public EssayQuestion(String questionText) {
-        this.questionText = questionText;
+public class EssayQuestion extends Question {
+    public EssayQuestion(String text) {
+        super(text);
     }
 
-    /**
-     * Constructs an EssayQuestion with both question text and a model answer.
-     * @param questionText The text of the essay question.
-     * @param modelAnswer The model answer for the essay question.
-     */
-    public EssayQuestion(String questionText, String modelAnswer) {
-        this(questionText);
-        this.modelAnswer = modelAnswer;
-    }
-
-    /**
-     * Returns the question text.
-     * @return The text of the question.
-     */
-    public String getQuestionText() {
-        return questionText;
-    }
-
-    /**
-     * Returns the model answer.
-     * @return The model answer of the question.
-     */
-    public String getModelAnswer() {
-        return modelAnswer;
-    }
-
-    /**
-     * Implements displayQuestion from the Question interface.
-     * @return The question text.
-     */
     @Override
-    public String displayQuestion() {
-        return questionText;
+    public void addQuestionToDatabase(Connection con, int quizId) throws SQLException {
+        String sql = "INSERT INTO quiz_questions (quiz_id, question_text, type) VALUES (?, ?, 'Essay');";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setInt(1, quizId);
+            pstmt.setString(2, text);
+            pstmt.executeUpdate();
+        }
     }
 }

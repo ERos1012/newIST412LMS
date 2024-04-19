@@ -7,15 +7,14 @@ import java.awt.*;
 import java.util.List;
 import Model.Assignment;
 
-public class AssignmentListView extends JPanel {
+public class TeacherAssignmentView extends JPanel {
     private AssignmentController manager;
     private JList<Assignment> assignmentJList;
     private DefaultListModel<Assignment> listModel;
     private JTable activeCoursesTable;
     private DefaultTableModel activeCoursesTableModel;
-    private JTextField idField;
 
-    public AssignmentListView(AssignmentController manager) {
+    public TeacherAssignmentView(AssignmentController manager) {
         this.manager = manager;
         this.listModel = new DefaultListModel<>();
         setLayout(new BorderLayout());

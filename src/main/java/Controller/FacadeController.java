@@ -116,7 +116,7 @@ public class FacadeController {
     }
 
     public List<Quiz> getAllQuizzes(Course course) {
-        return quizController.getAllQuizzes(course);
+        return quizController.getAllQuizzes();
     }
 
     public void gradeQuiz(int studentId, int courseId, int quizId, int grade) {
