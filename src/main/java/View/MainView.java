@@ -80,7 +80,7 @@ public class MainView extends JFrame {
         JPanel gradeView = new GradeView(new Model.Grade());
         cardsPanel.add(gradeView, "Grade");
 
-        JPanel messageView = new MessageView();
+        MessageView messageView = new MessageView();
         cardsPanel.add(messageView, "Message");
 
         JPanel quizView = new QuizView();

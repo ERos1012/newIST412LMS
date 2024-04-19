@@ -45,6 +45,7 @@ public class LoginView extends JPanel {
                     // If login successful, notify listener
                     if (loginListener != null) {
                         loginListener.actionPerformed(e);
+                        JOptionPane.showConfirmDialog(LoginView.this, "Successfully logged in", "Login Success", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
                     }
                 } else {
                     // Display error message for invalid login
