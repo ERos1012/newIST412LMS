@@ -1,6 +1,8 @@
 package Controller;
 
 import Model.Assignment;
+import Model.Course;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +20,12 @@ public class AssignmentController {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            String sql = "INSERT INTO Assignments(name, description, dueDate) VALUES(?, ?, ?)";
+            String sql = "INSERT INTO Assignments(name, description, dueDate, courseId) VALUES(?, ?, ?, ?)";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, assignment.getName());
             pstmt.setString(2, assignment.getDescription());
             pstmt.setString(3, assignment.getDueDate());
+            pstmt.setInt(4, assignment.getCourseId());
             pstmt.executeUpdate();
             System.out.println("Assignment added successfully.");
         } catch (Exception e) {
@@ -72,7 +75,8 @@ public class AssignmentController {
                             rs.getString("name"),
                             rs.getString("description"),
                             rs.getString("dueDate"),
-                            rs.getBoolean("isActive") // Fetch the isActive column
+                            rs.getBoolean("isActive"),
+                            rs.getInt("courseId")
                     );
                     assignments.add(assignment);
                 }
@@ -109,10 +113,10 @@ public class AssignmentController {
 //        readAllAssignments();
 //    }
 
-    public List<Assignment> getActiveAssignments() {
+    public List<Assignment> getActiveAssignments(Course course) {
         List<Assignment> activeAssignments = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
-            String sql = "SELECT * FROM Assignments WHERE isActive = 1";
+            String sql = ("SELECT * FROM Assignments WHERE isActive = 1 AND courseId = " + course.getId());
             try (Statement stmt = con.createStatement();
                  ResultSet rs = stmt.executeQuery(sql)) {
                 while (rs.next()) {
@@ -121,7 +125,8 @@ public class AssignmentController {
                             rs.getString("name"),
                             rs.getString("description"),
                             rs.getString("dueDate"),
-                            rs.getBoolean("isActive")
+                            rs.getBoolean("isActive"),
+                            rs.getInt("courseId")
                     );
                     activeAssignments.add(assignment);
                 }
@@ -143,7 +148,8 @@ public class AssignmentController {
                             rs.getString("name"),
                             rs.getString("description"),
                             rs.getString("dueDate"),
-                            rs.getBoolean("isActive")
+                            rs.getBoolean("isActive"),
+                            rs.getInt("courseId")
                     );
                 }
             }

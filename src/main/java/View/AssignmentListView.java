@@ -5,7 +5,10 @@ import javax.swing.table.DefaultTableModel;
 import Controller.AssignmentController;
 import java.awt.*;
 import java.util.List;
+
+import Controller.CourseController;
 import Model.Assignment;
+import Model.Course;
 
 public class AssignmentListView extends JPanel {
     private AssignmentController manager;
@@ -14,25 +17,36 @@ public class AssignmentListView extends JPanel {
     private JTable activeCoursesTable;
     private DefaultTableModel activeCoursesTableModel;
     private JTextField idField;
+    private Course course;
 
-    public AssignmentListView(AssignmentController manager) {
+    public AssignmentListView(AssignmentController manager, Course course) {
         this.manager = manager;
         this.listModel = new DefaultListModel<>();
+        this.course = course;
         setLayout(new BorderLayout());
         initializeUI();
     }
 
     private void initializeUI() {
+        //Header
+        JLabel headerLabel = new JLabel("Assignments for: " + course.getName(), JLabel.CENTER);
+        headerLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        add(headerLabel, BorderLayout.NORTH);
 
         // Panel for buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton addButton = new JButton("Add");
         JButton removeButton = new JButton("Remove");
         JButton updateButton = new JButton("Update");
+        JButton backButton = new JButton("Back");
+        JButton allCoursesButton = new JButton("All Courses");
 
+
+        buttonPanel.add(backButton);
         buttonPanel.add(addButton);
         buttonPanel.add(removeButton);
         buttonPanel.add(updateButton);
+        buttonPanel.add(allCoursesButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
 
@@ -69,6 +83,10 @@ public class AssignmentListView extends JPanel {
 
 
 
+        // Back button action
+        backButton.addActionListener(e -> switchToSelectedCourseView(course));
+
+        allCoursesButton.addActionListener(e -> switchToCourseView());
 
         // Panel to display active courses
         JPanel activeCoursesPanel = new JPanel(new BorderLayout());
@@ -82,6 +100,31 @@ public class AssignmentListView extends JPanel {
 
         refreshAssignmentList();
         refreshActiveCoursesTable();
+    }
+
+    private void switchToSelectedCourseView(Course course) {
+        AssignmentController assignmentController = new AssignmentController();
+        SelectedCourseView selectedCourseView = new SelectedCourseView(course, assignmentController);
+
+        // Replace the current panel with the SelectedCourseView
+        removeAll();
+        setLayout(new BorderLayout());
+        add(selectedCourseView, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
+
+    private void switchToCourseView() {
+        // Create a new instance of CourseView
+        CourseController courseController = new CourseController();  // Assuming you can create a new instance of CourseController
+        CourseView courseView = new CourseView(courseController);
+
+        // Replace the current panel with the SelectedCourseView
+        removeAll();
+        setLayout(new BorderLayout());
+        add(courseView, BorderLayout.CENTER);
+        revalidate();
+        repaint();
     }
 
     private void showAssignmentDialog(Assignment assignment) {
@@ -111,6 +154,7 @@ public class AssignmentListView extends JPanel {
                 newAssignment.setName(nameField.getText());
                 newAssignment.setDescription(descField.getText());
                 newAssignment.setDueDate(dateField.getText());
+                newAssignment.setCourseId(course.getId());
                 // Add the new assignment using the controller
                 manager.addAssignment(newAssignment);
             } else {
@@ -168,7 +212,7 @@ public class AssignmentListView extends JPanel {
 
     private void refreshActiveCoursesTable() {
         activeCoursesTableModel.setRowCount(0); // Clear existing rows
-        List<Assignment> activeAssignments = manager.getActiveAssignments(); // Assuming a method in AssignmentController to fetch active assignments
+        List<Assignment> activeAssignments = manager.getActiveAssignments(course); // Assuming a method in AssignmentController to fetch active assignments
         for (Assignment assignment : activeAssignments) {
             activeCoursesTableModel.addRow(new Object[] {assignment.getId(), assignment.getName(), assignment.getDueDate()});
         }

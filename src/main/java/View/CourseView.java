@@ -1,218 +1,210 @@
 package View;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
+import javax.swing.table.DefaultTableModel;
 
+import Controller.AssignmentController;
 import Controller.CourseController;
+import java.awt.*;
+import java.util.List;
 import Model.Course;
 
-/**
- * The CourseView class represents a graphical user interface for displaying course details.
- */
 public class CourseView extends JPanel {
-    private JTextArea courseTextArea = new JTextArea();
-    private JButton addButton;
-    private JButton removeButton;
-    private JButton updateButton;
-    private JButton viewButton;
-    private final CourseController courseController;
+    private CourseController manager;
+    private AssignmentController assignmentController;
+    private JList<Course> courseJList;
+    private DefaultListModel<Course> listModel;
+    private JTable activeCoursesTable;
+    private DefaultTableModel activeCoursesTableModel;
 
-    /**
-     * Constructs a new CourseView object.
-     */
-    public CourseView(CourseController courseController) {
-        super();
-        this.courseController = courseController;
-
+    public CourseView(CourseController manager) {
+        this.manager = manager;
+        this.listModel = new DefaultListModel<>();
+        setLayout(new BorderLayout());
         initializeUI();
-        updateCourseDetails();
     }
 
-    /**
-     * Initializes the UI components.
-     */
+
     private void initializeUI() {
-        // Text fields for entering course details
-        JTextField nameField = new JTextField(20);
-        JTextField idField = new JTextField(10);
-        JTextField programField = new JTextField(20);
-        JTextField instructorField = new JTextField(20);
 
-        // Add button to trigger course addition
-        addButton = new JButton("Add");
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Retrieve course details from text fields
-                String name = nameField.getText().trim();
+        JLabel headerLabel = new JLabel("Courses", JLabel.CENTER);
+        headerLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        add(headerLabel, BorderLayout.NORTH);
+
+        // Panel for buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton addButton = new JButton("Add");
+        JButton removeButton = new JButton("Remove");
+        JButton updateButton = new JButton("Update");
+        JButton viewButton = new JButton("View Course");
+
+        buttonPanel.add(addButton);
+        buttonPanel.add(removeButton);
+        buttonPanel.add(updateButton);
+        buttonPanel.add(viewButton);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // Add button action
+        addButton.addActionListener(e -> showCourseDialog(null));
+
+        // Remove button action
+        removeButton.addActionListener(e -> showRemoveCourseDialog());
+
+        // Update button action
+        updateButton.addActionListener(e -> {
+            // Create a dialog to enter the course ID
+            JTextField idField = new JTextField(10);
+            JPanel idPanel = new JPanel();
+            idPanel.add(new JLabel("ID:"));
+            idPanel.add(idField);
+
+            int result = JOptionPane.showConfirmDialog(this, idPanel, "Enter Course ID", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) {
                 String idText = idField.getText().trim();
-                String program = programField.getText().trim();
-                String instructor = instructorField.getText().trim();
-
-                // Check if any field is empty
-                if (name.isEmpty() || idText.isEmpty() || program.isEmpty() || instructor.isEmpty()) {
-                    JOptionPane.showMessageDialog(CourseView.this, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE);
-                    return; // Exit without adding the course
+                if (!idText.isEmpty()) {
+                    int id = Integer.parseInt(idText);
+                    Course course = manager.getCourse(id);
+                    if (course != null) {
+                        showCourseDialog(course);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Course not found!", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Please enter Course ID!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-
-                // Parse ID to integer
-                int id;
-                try {
-                    id = Integer.parseInt(idText);
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(CourseView.this, "Invalid ID!", "Error", JOptionPane.ERROR_MESSAGE);
-                    return; // Exit without adding the course
-                }
-
-                // Create new course object
-                Course newCourse = new Course(name, id, program, instructor);
-
-                // Add course to the system
-                courseController.addCourse(newCourse);
-                System.out.println("Course added: Name - " + name + ", ID - " + id + ", Program - " + program + ", Instructor - " + instructor);
-                // Update course details after adding
-                updateCourseDetails();
             }
         });
 
-        // View button to display course details
-        viewButton = new JButton("View");
-        viewButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Call the Course Controller to view course details
-                courseController.viewCourse(new Course("IST", 120, "Engineering", "Dr. Lee"));
-            }
-        });
+        // View button action
+        viewButton.addActionListener(e -> viewSelectedCourse());
 
-        // Update button to update course details
-        updateButton = new JButton("Update");
-        updateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                courseController.updateCourse(new Course("Math", 101, "Engineering", "Dr. Smith"));
-            }
-        });
+        // Panel to display active courses
+        JPanel activeCoursesPanel = new JPanel(new BorderLayout());
+        activeCoursesTableModel = new DefaultTableModel();
+        activeCoursesTableModel.addColumn("ID");
+        activeCoursesTableModel.addColumn("Name");
+        activeCoursesTableModel.addColumn("Program");
+        activeCoursesTableModel.addColumn("Instructor");
+        activeCoursesTable = new JTable(activeCoursesTableModel);
+        activeCoursesPanel.add(new JScrollPane(activeCoursesTable), BorderLayout.CENTER);
+        // Add the activeCoursesPanel to the main panel
+        add(activeCoursesPanel, BorderLayout.CENTER);
 
-        // Remove button to remove a course
-        removeButton = new JButton("Remove");
-        removeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                courseController.removeCourse(101);
-                // Update course details after removing
-                updateCourseDetails();
-            }
-        });
 
-        // Panel to hold text fields and buttons for adding, viewing, updating, and removing courses
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new GridLayout(6, 2));
-        inputPanel.add(new JLabel("Course Name:"));
-        inputPanel.add(nameField);
-        inputPanel.add(new JLabel("Course ID:"));
-        inputPanel.add(idField);
-        inputPanel.add(new JLabel("Program:"));
-        inputPanel.add(programField);
-        inputPanel.add(new JLabel("Instructor:"));
-        inputPanel.add(instructorField);
-        inputPanel.add(addButton);
-        inputPanel.add(viewButton);
-        inputPanel.add(updateButton);
-        inputPanel.add(removeButton);
+        refreshCourseList();
+        refreshActiveCoursesTable();
 
-        // Add the input panel to the CourseView
-        add(inputPanel, BorderLayout.NORTH);
     }
 
-    /**
-     * Updates the UI to display course details using separate panels for each course.
-     */
-    private void updateCourseDetails() {
-        // Create a panel to hold all course panels
-        JPanel coursesPanel = new JPanel();
-        coursesPanel.setLayout(new BoxLayout(coursesPanel, BoxLayout.Y_AXIS));
+    private void viewSelectedCourse() {
+        int selectedRow = activeCoursesTable.getSelectedRow();
+        if (selectedRow != -1) {
+            int id = (int) activeCoursesTableModel.getValueAt(selectedRow, 0);
+            Course course = manager.getCourse(id);
+            if (course != null) {
+                // Create a new SelectedCourseView instance with the selected course
+                SelectedCourseView selectedCourseView = new SelectedCourseView(course, assignmentController);
 
-        // Get all courses
-        List<Course> courses = courseController.getAllCourses();
+                // Replace the current panel with the SelectedCourseView
+                removeAll();
+                setLayout(new BorderLayout());
+                add(selectedCourseView, BorderLayout.CENTER);
+                revalidate();
+                repaint();
+            } else {
+                JOptionPane.showMessageDialog(this, "Course not found!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a course from the list.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void showCourseDialog(Course course) {
+        // Text fields pre-populated with course data if updating, empty if adding
+        JTextField nameField = new JTextField(course != null ? course.getName() : "", 20);
+        JTextField programField = new JTextField(course != null ? course.getProgram() : "", 20);
+        JTextField instructorField = new JTextField(course != null ? course.getInstructor() : "", 20);
+
+        // Set up the panel to get user input
+        JPanel dialogPanel = new JPanel(new GridLayout(0, 2));
+        dialogPanel.add(new JLabel("Name:"));
+        dialogPanel.add(nameField);
+        dialogPanel.add(new JLabel("Program:"));
+        dialogPanel.add(programField);
+        dialogPanel.add(new JLabel("Instructor:"));
+        dialogPanel.add(instructorField);
+
+        // Show a confirm dialog to get user input
+        int result = JOptionPane.showConfirmDialog(this, dialogPanel,
+                course != null ? "Update Course" : "Add Course",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            if (course == null) {
+                // Create a new Course object with the input data
+                Course newCourse = new Course(); // Assuming there's a default constructor
+                newCourse.setName(nameField.getText());
+                newCourse.setProgram(programField.getText());
+                newCourse.setInstructor(instructorField.getText());
+                // Add the new course using the controller
+                manager.addCourse(newCourse);
+            } else {
+                // Update the current course object with the new data
+                course.setName(nameField.getText());
+                course.setProgram(programField.getText());
+                course.setInstructor(instructorField.getText());
+                // Update the course using the controller
+                manager.updateCourse(course);
+            }
+            // Refresh the list to show changes
+            refreshCourseList();
+            refreshActiveCoursesTable();
+        }
+    }
+
+    private void showRemoveCourseDialog() {
+        // Text field to input course ID
+        JTextField idField = new JTextField(10);
+
+        // Set up the panel to get user input
+        JPanel dialogPanel = new JPanel(new GridLayout(0, 2));
+        dialogPanel.add(new JLabel("Course ID:"));
+        dialogPanel.add(idField);
+
+        // Show a confirm dialog to get user input
+        int result = JOptionPane.showConfirmDialog(this, dialogPanel,
+                "Remove Course", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            // Get the ID entered by the user
+            int courseId;
+            try {
+                courseId = Integer.parseInt(idField.getText());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid course ID.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Remove the course with the entered ID
+            manager.removeCourse(courseId);
+            refreshCourseList();
+            refreshActiveCoursesTable();
+        }
+    }
+
+    private void refreshCourseList() {
+        listModel.removeAllElements();
+        List<Course> courses = manager.getAllCourses();
         for (Course course : courses) {
-            // Create a panel for each course
-            JPanel coursePanel = new JPanel();
-            coursePanel.setLayout(new BorderLayout());
-
-            // Create a label to display course details
-            JLabel courseLabel = new JLabel("Name: " + course.getName() + ", ID: " + course.getId() +
-                    ", Program: " + course.getProgram() + ", Professor: " + course.getInstructor());
-
-            // Create a favorite/unfavorite button
-            JButton favoriteButton = new JButton("Favorite");
-            favoriteButton.addActionListener(new FavoriteButtonActionListener(course, favoriteButton));
-
-            // Add course label and favorite/unfavorite button to the course panel
-            coursePanel.add(courseLabel, BorderLayout.CENTER);
-            coursePanel.add(favoriteButton, BorderLayout.EAST);
-
-            // Add the course panel to the coursesPanel
-            coursesPanel.add(coursePanel);
-        }
-
-        // Remove the old courseTextArea
-        remove(courseTextArea);
-
-        // Add the coursesPanel to the CourseView
-        add(new JScrollPane(coursesPanel), BorderLayout.CENTER);
-
-        // Refresh the CourseView
-        revalidate();
-        repaint();
-    }
-
-    /**
-     * Action listener for favorite/unfavorite button.
-     */
-    private class FavoriteButtonActionListener implements ActionListener {
-        private Course course;
-        private JButton button;
-        private boolean isFavorite;
-
-        public FavoriteButtonActionListener(Course course, JButton button) {
-            this.course = course;
-            this.button = button;
-            this.isFavorite = false;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            isFavorite = !isFavorite;
-            if (isFavorite) {
-                button.setText("Favorited");
-                // Change button color, icon, etc. to indicate favorited state
-            } else {
-                button.setText("Favorite");
-                // Change button color, icon, etc. to indicate unfavorited state
-            }
-
-            // Handle favorite/unfavorite action accordingly
-            if (isFavorite) {
-                // Add course to favorites
-                System.out.println("Course added to favorites: " + course.getName());
-            } else {
-                // Remove course from favorites
-                System.out.println("Course removed from favorites: " + course.getName());
-            }
+            listModel.addElement(course);
         }
     }
 
-    /**
-     * The main method to launch the CourseView.
-     *
-     * @param args the command-line arguments
-     */
-    public static void main(String[] args) {
-        CourseController courseController = new CourseController();
-        SwingUtilities.invokeLater(() -> new CourseView(courseController));
+    private void refreshActiveCoursesTable() {
+        activeCoursesTableModel.setRowCount(0); // Clear existing rows
+        List<Course> activeCourses = manager.getActiveCourses();
+        for (Course course : activeCourses) {
+            activeCoursesTableModel.addRow(new Object[]{course.getId(), course.getName(), course.getProgram(), course.getInstructor(), "View"});
+        }
     }
 }

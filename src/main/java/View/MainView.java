@@ -4,11 +4,13 @@ package View;
 import javax.swing.*;
 
 import Controller.AssignmentController;
+import Controller.CourseController;
 import Controller.LoginController;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 
 /**
  * The MainView class represents the home page of the application with a navigation bar
@@ -21,31 +23,32 @@ public class MainView extends JFrame {
     private JPanel cardsPanel = new JPanel(cardLayout); // Panel that contains different views
 
     public MainView() {
-        super("Home Page");
+        super("Group 4 LMS");
         initializeUI();
     }
 
     private void initializeUI() {
         // Navigation panel setup
-        JPanel navigationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel navigationPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         // Buttons for each view
         JButton dashboardButton = new JButton("Dashboard");
-        JButton assignmentButton = new JButton("Assignment");
+//        JButton assignmentButton = new JButton("Assignment");
         JButton courseButton = new JButton("Course");
         JButton gradeButton = new JButton("Grade");
         JButton messageButton = new JButton("Message");
         JButton quizButton = new JButton("Quiz");
-        JButton newAssignmentButton = new JButton("New Assignment");
+//        JButton newAssignmentButton = new JButton("New Assignment");
+
 
         // Add buttons to the navigation panel
         navigationPanel.add(dashboardButton);
-        navigationPanel.add(assignmentButton);
+//        navigationPanel.add(assignmentButton);
         navigationPanel.add(courseButton);
         navigationPanel.add(gradeButton);
         navigationPanel.add(messageButton);
         navigationPanel.add(quizButton);
-        navigationPanel.add(newAssignmentButton);
+//        navigationPanel.add(newAssignmentButton);
 
         // Create a LoginView instance
         LoginController loginController = new LoginController();
@@ -60,7 +63,7 @@ public class MainView extends JFrame {
                 navigationPanel.setVisible(true);
             }
         });
- 
+
          navigationPanel.setVisible(false);
 
         // Add LoginView to the cardsPanel
@@ -70,10 +73,10 @@ public class MainView extends JFrame {
         JPanel dashboardView = new DashboardView();
         cardsPanel.add(dashboardView, "Dashboard");
 
-        JPanel assignmentView = new AssignmentView();
-        cardsPanel.add(assignmentView, "Assignment");
+//        JPanel assignmentView = new AssignmentView();
+//        cardsPanel.add(assignmentView, "Assignment");
 
-        JPanel courseView = new CourseView(new Controller.CourseController());
+        JPanel courseView = new CourseView(new CourseController());
         cardsPanel.add(courseView, "Course");
 
         JPanel gradeView = new GradeView(new Model.Grade());
@@ -85,18 +88,19 @@ public class MainView extends JFrame {
         JPanel quizView = new QuizView();
         cardsPanel.add(quizView, "Quiz");
 
-        JPanel newAssignmentView = new AssignmentListView(new AssignmentController());
-        cardsPanel.add(newAssignmentView, "New Assignment");
+
+//        JPanel newAssignmentView = new AssignmentListView(new AssignmentController());
+//        cardsPanel.add(newAssignmentView, "New Assignment");
 
 
         // Action listeners for buttons to switch views
         dashboardButton.addActionListener(e -> cardLayout.show(cardsPanel, "Dashboard"));
-        assignmentButton.addActionListener(e -> cardLayout.show(cardsPanel, "Assignment"));
+//        assignmentButton.addActionListener(e -> cardLayout.show(cardsPanel, "Assignment"));
         courseButton.addActionListener(e -> cardLayout.show(cardsPanel, "Course"));
         gradeButton.addActionListener(e -> cardLayout.show(cardsPanel, "Grade"));
         messageButton.addActionListener(e -> cardLayout.show(cardsPanel, "Message"));
         quizButton.addActionListener(e -> cardLayout.show(cardsPanel, "Quiz"));
-        newAssignmentButton.addActionListener(e -> cardLayout.show(cardsPanel, "New Assignment"));
+//        newAssignmentButton.addActionListener(e -> cardLayout.show(cardsPanel, "New Assignment"));
 
         // Layout setup for the main frame
         setLayout(new BorderLayout());
@@ -108,7 +112,6 @@ public class MainView extends JFrame {
         setSize(800, 400);
         setLocationRelativeTo(null); // Center the frame on the screen
     }
-
 
 
     /**

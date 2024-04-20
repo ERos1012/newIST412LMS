@@ -8,12 +8,15 @@ public class Assignment {
     private int id;
     private boolean isActive;
 
-    public Assignment(int id, String name, String description, String dueDate, boolean isActive) {
+    private int courseId;
+
+    public Assignment(int id, String name, String description, String dueDate, boolean isActive, int courseId) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.dueDate = dueDate;
         this.isActive = isActive;
+        this.courseId = courseId;
     }
 
     public Assignment() {
@@ -55,5 +58,14 @@ public class Assignment {
 
     public void setId(int id){
         this.id = id;
+    }
+
+    public int getCourseId()
+    {
+        return courseId;
+    }
+
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
     }
 }

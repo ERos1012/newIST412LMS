@@ -117,6 +117,10 @@ This test harness is designed to test the functionalities of the AssignmentContr
 
 - For each test case, the console output will indicate whether the test passed or failed.
 
+## Authentication
+
+- authentication methods are implemented in LoginController. Utilizes usernames and passwords stored in the database.
+
 ## Members
 
 1. Eric Rosario
@@ -129,7 +133,7 @@ This test harness is designed to test the functionalities of the AssignmentContr
 | evr5419 + Eric Rosario  | - Coded the tests for the Course, Grade, Message, and Quiz Controller (part 2) |
 | klh6157 + Kai Huang     | - Coded the tests for the Assignment Controller (part 2)                    |
 | agn5089 + Anish Nangare | - Coded the tests for the Student, and Teacher Controller (part 2)                     |
-| bqz5148 + Bryan Zhou    | - Completed part 1 of the assignment  
+| bqz5148 + Bryan Zhou    | - Completed part 1 of the assignment  |
 
 | Team Member ID + Name   |  Contribution in The M02-A02 Project Function Point Analysis and Estimate                 |
 | ----------------------- |  -----------------------------------------------------------------------------------------|
