@@ -1,9 +1,16 @@
 package Model;
 
-/**
- * The Question interface for all types of quiz questions.
- */
-public interface Question {
-    String displayQuestion();
+import java.sql.Connection;
+import java.sql.SQLException;
 
+public abstract class Question {
+    protected String text;
+
+    public Question(String text) {
+        this.text = text;
+    }
+
+    public abstract void addQuestionToDatabase(Connection con, int quizId) throws SQLException;
+
+    public abstract String getText();
 }
