@@ -1,75 +1,106 @@
 package Controller;
 
-import Model.EmailAPI;
 import Model.Message;
 import Model.Student;
 import Model.Teacher;
 
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The MessageController class manages messages in the system.
- */
 public class MessageController {
-    private EmailAPI emailAPI = new EmailAPI();
+    private static final String HOSTNAME = "localhost";
+    private static final int PORT = 3306;
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "jisquz-hatdod-1gyqVu";
+    private static final String DATABASE_NAME = "412lms";
+    private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME + "?useSSL=false";
 
-    /**
-     * Sends an email with the provided details.
-     *
-     * @param senderName The name of the sender.
-     * @param receiverEmail The email address of the receiver.
-     * @param messageContent The content of the message.
-     */
-    public void sendEmail(String senderName, String receiverEmail, String messageContent) {
-        EmailAPI.sendEmail(senderName, receiverEmail, messageContent);
-        System.out.println("Email sent from " + senderName + " to " + receiverEmail + " with message: " + messageContent);
+    public MessageController() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.err.println("MySQL JDBC Driver not found: " + e.getMessage());
+        }
     }
 
-
-    /**
-     * Method to send email notifications
-     */
-    private void sendEmailNotification(Message message) {
-        String name = "Sender Name";  // This should be fetched from user data based on senderId
-        String email = "receiver@example.com";  // This should be fetched from user data based on receiverId
-        EmailAPI.sendEmail(name, email, message.getMessage());
+    public void sendMessage(Message message) {
+        String sql = "INSERT INTO message (sender_id, receiver_id, content, timestamp, sender_type) VALUES (?, ?, ?, ?, ?);";
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setInt(1, message.getSenderId());
+            pstmt.setInt(2, message.getReceiverId());
+            pstmt.setString(3, message.getContent());
+            pstmt.setTimestamp(4, message.getTimestamp());
+            pstmt.setString(5, message.getSenderType());
+            pstmt.executeUpdate();
+            System.out.println("Message sent successfully.");
+        } catch (SQLException e) {
+            System.err.println("Error sending message: " + e.getMessage());
+        }
     }
 
-    /**
-     * Views a message.
-     * In a real-world application, this would fetch a message from a data store.
-     */
-    public Message viewMessage(Message message) {
-        return message;
+    public Message viewMessage(int messageId) {
+        final String sql = "SELECT * FROM message WHERE id = ?";
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setInt(1, messageId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Message(
+                        rs.getInt("id"),
+                        rs.getInt("sender_id"),
+                        rs.getInt("receiver_id"),
+                        rs.getString("message"),
+                        rs.getTimestamp("timestamp"),
+                        rs.getString("sender_type")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error viewing message: " + e.getMessage());
+        }
+        return null;
     }
 
-    /**
-     * Deletes a message.
-     * This would typically involve removing the message from a data store.
-     */
-    public void deleteMessage(Message message) {
-        System.out.println("Message deleted: ID " + message.getId());
+    public void deleteMessage(int messageId) {
+        final String sql = "DELETE FROM message WHERE id = ?";
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setInt(1, messageId);
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("Message deleted successfully: ID " + messageId);
+            } else {
+                System.out.println("No message found with ID: " + messageId);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error deleting message: " + e.getMessage());
+        }
     }
 
-    /**
-     * Gets all of a student's messages.
-     * This would fetch messages from a data store.
-     * @param student
-     * @return List of messages
-     */
-    public List<String> getStudentMessages(Student student) {
-        // Mock data, replace with actual fetch logic
-        return List.of("Message 1 from Student", "Message 2 from Student");
-    }
-
-    /**
-     * Gets all of a teacher's messages.
-     * This would fetch messages from a data store.
-     * @param teacher
-     * @return List of messages
-     */
-    public List<String> getTeacherMessages(Teacher teacher) {
-        // Mock data, replace with actual fetch logic
-        return List.of("Message 1 from Teacher", "Message 2 from Teacher");
+    public List<Message> getAllMessagesForUser(int userId, String userType) {
+        List<Message> messages = new ArrayList<>();
+        String sql = "SELECT * FROM message WHERE receiver_id = ? AND sender_type = ?";
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            pstmt.setString(2, userType);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    messages.add(new Message(
+                        rs.getInt("id"),
+                        rs.getInt("sender_id"),
+                        rs.getInt("receiver_id"),
+                        rs.getString("message"),
+                        rs.getTimestamp("timestamp"),
+                        rs.getString("sender_type")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching messages: " + e.getMessage());
+        }
+        return messages;
     }
 }

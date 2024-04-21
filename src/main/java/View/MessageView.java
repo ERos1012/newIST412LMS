@@ -1,101 +1,117 @@
 package View;
 
-import javax.swing.*;
 import Controller.MessageController;
-import Model.EmailAPI;
 import Model.Message;
+
+import javax.swing.*;
 import java.awt.*;
+import java.sql.Timestamp;
 
 public class MessageView extends JFrame {
-    private JLabel idLabel;
-    private JLabel senderIdLabel;
-    private JLabel receiverIdLabel;
-    private JLabel messageLabel;
-    private JLabel dateLabel;
-    private JTextField emailTextField;
-    private JTextField senderNameTextField; // Text field for sender's name
-    private JTextArea messageTextArea;
-    private JButton sendEmailButton;
-    private MessageController messageController;
-    private JLabel statusLabel;
+
+    private CardLayout cardLayout = new CardLayout();
+    private JPanel cardsPanel = new JPanel(cardLayout); // Panel that contains different views
+    private MessageController messageController; // Controller for message functionalities
+    private JTextArea messageBodyField; // Global declaration to ensure accessibility
 
     public MessageView() {
-        super("Message View");
-
-        // Initialize the MessageController
+        super("Message System");
         messageController = new MessageController();
-
-        // Initialize labels
-        idLabel = new JLabel("ID: ");
-        senderIdLabel = new JLabel("Sender ID: ");
-        receiverIdLabel = new JLabel("Receiver ID: ");
-        dateLabel = new JLabel("Date: ");
-        statusLabel = new JLabel(" ");
-        statusLabel.setForeground(Color.RED);
-
-        // Initialize text fields for email and sender's name
-        emailTextField = new JTextField(20);
-        emailTextField.setToolTipText("Enter recipient's email");
-        senderNameTextField = new JTextField(20);
-        senderNameTextField.setToolTipText("Enter sender's name");
-
-        // Initialize text area for the message
-        messageTextArea = new JTextArea(5, 20);
-        messageTextArea.setLineWrap(true);
-        messageTextArea.setWrapStyleWord(true);
-        JScrollPane messageScrollPane = new JScrollPane(messageTextArea);
-
-        // Initialize and add the Send Email button
-        sendEmailButton = new JButton("Send Email");
-        sendEmailButton.addActionListener(e -> onSendEmailClicked());
-
-        // Create a panel to hold the labels, text fields, and button
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(idLabel);
-        panel.add(senderIdLabel);
-        panel.add(receiverIdLabel);
-        panel.add(dateLabel);
-        panel.add(new JLabel("Sender's Name:"));
-        panel.add(senderNameTextField);
-        panel.add(new JLabel("Recipient's Email:"));
-        panel.add(emailTextField);
-        panel.add(new JLabel("Message:"));
-        panel.add(messageScrollPane);
-        panel.add(sendEmailButton);
-        panel.add(statusLabel);
-
-        // Add the panel to the frame
-        this.add(panel);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.pack();
-        this.setVisible(true);
+        initializeUI();
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(500, 400);
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
-    private void onSendEmailClicked() {
-        System.out.println("Send Email button clicked");
-        String receiverEmail = emailTextField.getText();
-        String senderName = senderNameTextField.getText();  // Retrieve the sender's name from the text field
-        String messageContent = messageTextArea.getText();
+    private void initializeUI() {
+        JPanel navigationPanel = setupNavigationPanel();
+        setupMessagePanels();
 
-        if (!receiverEmail.isEmpty() && !senderName.isEmpty() && !messageContent.isEmpty()) {
-            try {
-                EmailAPI.sendEmail(senderName, receiverEmail, messageContent);
-                System.out.println("Email sent to: " + receiverEmail + " with message: " + messageContent);
-                statusLabel.setForeground(Color.GREEN);
-                statusLabel.setText("Email sent successfully to: " + receiverEmail);
-            } catch (Exception e) {
-                System.out.println("Failed to send email: " + e.getMessage());
-                statusLabel.setForeground(Color.RED);
-                statusLabel.setText("Failed to send email: " + e.getMessage());
-            }
-        } else {
-            System.out.println("Failed to send email: Invalid sender name, email address, or message content.");
-            statusLabel.setText("Invalid sender name, email address, or message content.");
+        add(navigationPanel, BorderLayout.NORTH);
+        add(cardsPanel, BorderLayout.CENTER);
+    }
+
+    private JPanel setupNavigationPanel() {
+        JPanel navigationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        String[] views = {"Dashboard", "Inbox", "Create Message"};
+        for (String view : views) {
+            JButton button = new JButton(view);
+            button.addActionListener(e -> cardLayout.show(cardsPanel, view));
+            navigationPanel.add(button);
         }
+        return navigationPanel;
+    }
+
+    private void setupMessagePanels() {
+        JPanel messageDashboardPanel = new JPanel(new GridLayout(1, 2));
+        JButton inboxButton = new JButton("Inbox");
+        JButton createMessageButton = new JButton("Create Message");
+
+        inboxButton.addActionListener(e -> cardLayout.show(cardsPanel, "Inbox"));
+        createMessageButton.addActionListener(e -> cardLayout.show(cardsPanel, "Create Message"));
+
+        messageDashboardPanel.add(inboxButton);
+        messageDashboardPanel.add(createMessageButton);
+        cardsPanel.add(messageDashboardPanel, "Dashboard");
+
+        setupInboxPanel();
+        setupCreateMessagePanel();
+    }
+
+    private void setupInboxPanel() {
+        JPanel inboxPanel = new JPanel(new BorderLayout());
+        JList<String> messageList = new JList<>();
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.addActionListener(e -> {
+            int userId = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter your ID:"));
+            String userType = JOptionPane.showInputDialog(this, "Enter your type (student/teacher):");
+            java.util.List<Message> messages = messageController.getAllMessagesForUser(userId, userType);
+            DefaultListModel<String> model = new DefaultListModel<>();
+            for (Message message : messages) {
+                model.addElement("From: " + message.getSenderId() + " - " + message.getContent());
+            }
+            messageList.setModel(model);
+        });
+        inboxPanel.add(new JScrollPane(messageList), BorderLayout.CENTER);
+        inboxPanel.add(refreshButton, BorderLayout.SOUTH);
+        cardsPanel.add(inboxPanel, "Inbox");
+    }
+
+    private void setupCreateMessagePanel() {
+        JPanel createMessagePanel = new JPanel(new GridLayout(5, 2));
+        JTextField senderIdField = new JTextField();
+        JTextField recipientIdField = new JTextField();
+        messageBodyField = new JTextArea(5, 20); // initialized here to ensure it's accessible
+        JButton sendButton = new JButton("Send Message");
+
+        createMessagePanel.add(new JLabel("Sender ID:"));
+        createMessagePanel.add(senderIdField);
+        createMessagePanel.add(new JLabel("Recipient ID:"));
+        createMessagePanel.add(recipientIdField);
+        createMessagePanel.add(new JLabel("Message:"));
+        createMessagePanel.add(new JScrollPane(messageBodyField));
+        sendButton.addActionListener(e -> {
+            try {
+                int senderId = Integer.parseInt(senderIdField.getText().trim());
+                int recipientId = Integer.parseInt(recipientIdField.getText().trim());
+                String message = messageBodyField.getText().trim();
+                if (message.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Message cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                messageController.sendMessage(new Message(senderId, recipientId, message, "student", new Timestamp(System.currentTimeMillis())));
+                JOptionPane.showMessageDialog(this, "Message sent!");
+                messageBodyField.setText(""); // Clear the message field after sending
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please ensure IDs are numeric.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        createMessagePanel.add(sendButton);
+        cardsPanel.add(createMessagePanel, "Create Message");
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(MessageView::new);
+        SwingUtilities.invokeLater(() -> new MessageView().setVisible(true));
     }
 }
