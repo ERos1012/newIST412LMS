@@ -1,16 +1,12 @@
-
 package View;
 
 import javax.swing.*;
 
-import Controller.AssignmentController;
 import Controller.CourseController;
 import Controller.LoginController;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 
 /**
  * The MainView class represents the home page of the application with a navigation bar
@@ -21,9 +17,11 @@ public class MainView extends JFrame {
 
     private CardLayout cardLayout = new CardLayout();
     private JPanel cardsPanel = new JPanel(cardLayout); // Panel that contains different views
+    private String userType = ""; // To keep track of the user type
 
     public MainView() {
         super("Group 4 LMS");
+        userType = "";
         initializeUI();
     }
 
@@ -33,48 +31,48 @@ public class MainView extends JFrame {
 
         // Buttons for each view
         JButton dashboardButton = new JButton("Dashboard");
-//        JButton assignmentButton = new JButton("Assignment");
         JButton courseButton = new JButton("Course");
         JButton gradeButton = new JButton("Grade");
         JButton messageButton = new JButton("Message");
         JButton quizButton = new JButton("Quiz");
-//        JButton newAssignmentButton = new JButton("New Assignment");
-
 
         // Add buttons to the navigation panel
         navigationPanel.add(dashboardButton);
-//        navigationPanel.add(assignmentButton);
         navigationPanel.add(courseButton);
         navigationPanel.add(gradeButton);
         navigationPanel.add(messageButton);
         navigationPanel.add(quizButton);
-//        navigationPanel.add(newAssignmentButton);
 
-        // Create a LoginView instance
         LoginController loginController = new LoginController();
         LoginView loginView = new LoginView(loginController);
 
-        // Set action listener for successful login
         loginView.setLoginListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
-                // Switch to the DashboardView upon successful login
-                cardLayout.show(cardsPanel, "Dashboard");
+                // Get the user type from the login controller
+                userType = loginController.getUserType();
 
+                // Switch to the appropriate dashboard view based on the user type
+                if (userType.equals("teacher")) {
+                    cardLayout.show(cardsPanel, "Dashboard");
+                } else if (userType.equals("student")) {
+                    cardLayout.show(cardsPanel, "StudentDashboard");
+                }
+
+                // Show the navigation panel after login
                 navigationPanel.setVisible(true);
             }
         });
 
-         navigationPanel.setVisible(false);
+
+        navigationPanel.setVisible(false); // Hide navigation panel initially
 
         // Add LoginView to the cardsPanel
         cardsPanel.add(loginView, "Login");
 
-        // Instantiate and add the actual views to the cardsPanel
+        // Instantiate and add views based on user type
         JPanel dashboardView = new DashboardView();
         cardsPanel.add(dashboardView, "Dashboard");
-
-//        JPanel assignmentView = new AssignmentView();
-//        cardsPanel.add(assignmentView, "Assignment");
 
         JPanel courseView = new CourseView(new CourseController());
         cardsPanel.add(courseView, "Course");
@@ -82,27 +80,60 @@ public class MainView extends JFrame {
         JPanel gradeView = new GradeView(new Model.Grade());
         cardsPanel.add(gradeView, "Grade");
 
-        JPanel messageView = new MessageView();
-        cardsPanel.add(messageView, "Message");
-
         JPanel quizView = new QuizView();
         cardsPanel.add(quizView, "Quiz");
 
+        // Instantiate and add student views
+        JPanel studentDashboardView = new StudentDashboardView();
+        cardsPanel.add(studentDashboardView, "StudentDashboard");
 
-//        JPanel newAssignmentView = new AssignmentListView(new AssignmentController());
-//        cardsPanel.add(newAssignmentView, "New Assignment");
+        JPanel studentCourseView = new StudentCourseView(new CourseController());
+        cardsPanel.add(studentCourseView, "StudentCourse");
+
+        JPanel studentGradeView = new StudentGradeView(new Model.Grade());
+        cardsPanel.add(studentGradeView, "StudentGrade");
+
+//        JPanel studentMessageView = new StudentMessageView();
+//        cardsPanel.add(studentMessageView, "StudentMessage");t
+
+        JPanel studentQuizView = new StudentQuizView();
+        cardsPanel.add(studentQuizView, "StudentQuiz");
+
+        // Set action listeners to switch views based on user type
+        dashboardButton.addActionListener(e -> {
+            if (userType.equals("teacher")) {
+                cardLayout.show(cardsPanel, "Dashboard");
+            } else if (userType.equals("student")) {
+                cardLayout.show(cardsPanel, "StudentDashboard");
+            }
+        });
+
+        courseButton.addActionListener(e -> {
+            if (userType.equals("teacher")) {
+                cardLayout.show(cardsPanel, "Course");
+            } else if (userType.equals("student")) {
+                cardLayout.show(cardsPanel, "StudentCourse");
+            }
+        });
+
+        gradeButton.addActionListener(e -> {
+            if (userType.equals("teacher")) {
+                cardLayout.show(cardsPanel, "Grade");
+            } else if (userType.equals("student")) {
+                cardLayout.show(cardsPanel, "StudentGrade");
+            }
+        });
+
+        quizButton.addActionListener(e -> {
+            if (userType.equals("teacher")) {
+                cardLayout.show(cardsPanel, "Quiz");
+            } else if (userType.equals("student")) {
+                cardLayout.show(cardsPanel, "StudentQuiz");
+            }
+        });
 
 
-        // Action listeners for buttons to switch views
-        dashboardButton.addActionListener(e -> cardLayout.show(cardsPanel, "Dashboard"));
-//        assignmentButton.addActionListener(e -> cardLayout.show(cardsPanel, "Assignment"));
-        courseButton.addActionListener(e -> cardLayout.show(cardsPanel, "Course"));
-        gradeButton.addActionListener(e -> cardLayout.show(cardsPanel, "Grade"));
-        messageButton.addActionListener(e -> cardLayout.show(cardsPanel, "Message"));
-        quizButton.addActionListener(e -> cardLayout.show(cardsPanel, "Quiz"));
-//        newAssignmentButton.addActionListener(e -> cardLayout.show(cardsPanel, "New Assignment"));
-
-        // Layout setup for the main frame
+        // Set up the main frame layout
         setLayout(new BorderLayout());
         add(navigationPanel, BorderLayout.NORTH);
         add(cardsPanel, BorderLayout.CENTER);
@@ -112,7 +143,6 @@ public class MainView extends JFrame {
         setSize(800, 400);
         setLocationRelativeTo(null); // Center the frame on the screen
     }
-
 
     /**
      * The main method to launch the MainView as the application's home page.

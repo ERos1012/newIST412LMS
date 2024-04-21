@@ -1,5 +1,7 @@
 package View;
 
-public class StudentQuizView {
+import javax.swing.*;
+
+public class StudentQuizView extends JPanel {
     
 }

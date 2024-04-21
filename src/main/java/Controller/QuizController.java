@@ -14,8 +14,8 @@ public class QuizController {
     private static final String HOSTNAME = "localhost";
     private static final int PORT = 3306;
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "password"; // Change 'password' to your MySQL root password
-    private static final String DATABASE_NAME = "quiz_database"; // Adjust the database name as needed
+    private static final String PASSWORD = "$Qqhollowpsu45"; // Change 'password' to your MySQL root password
+    private static final String DATABASE_NAME = "412lms"; // Adjust the database name as needed
     private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME + "?useSSL=false";
 
     public QuizController() {

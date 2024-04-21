@@ -8,7 +8,7 @@ import Model.Grade;
 /**
  * The GradeView class represents a graphical user interface for displaying grade details.
  */
-public class GradeView extends JPanel {
+public class StudentGradeView extends JPanel {
     private JLabel idLabel;
     private JLabel studentIdLabel;
     private JLabel courseIdLabel;
@@ -18,7 +18,7 @@ public class GradeView extends JPanel {
     /**
      * Constructs a new GradeView object.
      */
-    public GradeView(Grade grade) {
+    public StudentGradeView(Grade grade) {
         super();
         // Initialize the GradeController
         gradeController = new GradeController();
@@ -57,7 +57,7 @@ public class GradeView extends JPanel {
 
     /**
      * The main method to launch the GradeView.
-     * 
+     *
      * @param args the command-line arguments
      */
     public static void main(String[] args) {

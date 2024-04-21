@@ -9,7 +9,7 @@ import java.awt.*;
 import java.util.List;
 import Model.Course;
 
-public class CourseView extends JPanel {
+public class StudentCourseView extends JPanel {
     private CourseController manager;
     private AssignmentController assignmentController;
     private JList<Course> courseJList;
@@ -17,7 +17,7 @@ public class CourseView extends JPanel {
     private JTable activeCoursesTable;
     private DefaultTableModel activeCoursesTableModel;
 
-    public CourseView(CourseController manager) {
+    public StudentCourseView(CourseController manager) {
         this.manager = manager;
         this.listModel = new DefaultListModel<>();
         setLayout(new BorderLayout());
@@ -27,7 +27,7 @@ public class CourseView extends JPanel {
 
     private void initializeUI() {
 
-        JLabel headerLabel = new JLabel("Courses", JLabel.CENTER);
+        JLabel headerLabel = new JLabel("Your Courses", JLabel.CENTER);
         headerLabel.setFont(new Font("Arial", Font.BOLD, 16));
         add(headerLabel, BorderLayout.NORTH);
 
@@ -103,12 +103,12 @@ public class CourseView extends JPanel {
             Course course = manager.getCourse(id);
             if (course != null) {
                 // Create a new SelectedCourseView instance with the selected course
-                SelectedCourseView SelectedCourseView = new SelectedCourseView(course, assignmentController);
+                StudentSelectedCourseView studentSelectedCourseView = new StudentSelectedCourseView(course, assignmentController);
 
                 // Replace the current panel with the SelectedCourseView
                 removeAll();
                 setLayout(new BorderLayout());
-                add(SelectedCourseView, BorderLayout.CENTER);
+                add(studentSelectedCourseView, BorderLayout.CENTER);
                 revalidate();
                 repaint();
             } else {

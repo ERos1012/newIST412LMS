@@ -6,13 +6,13 @@ import java.awt.*;
 import Controller.CourseController;
 import Controller.AssignmentController;
 import Model.Course;
-import View.TeacherAssignment.AssignmentListView;
+import View.StudentAssignmentView;
 
-public class SelectedCourseView extends JPanel {
+public class StudentSelectedCourseView extends JPanel {
     private final AssignmentController assignmentController;
     private Course course;
 
-    public SelectedCourseView(Course course, AssignmentController assignmentController) {
+    public StudentSelectedCourseView(Course course, AssignmentController assignmentController) {
         this.course = course;
         this.assignmentController = assignmentController;
         setLayout(new BorderLayout());
@@ -62,12 +62,12 @@ public class SelectedCourseView extends JPanel {
     private void switchToAssignmentListView(Course course) {
         // Create a new instance of AssignmentListView
         AssignmentController assignmentController = new AssignmentController();
-        AssignmentListView assignmentListView = new AssignmentListView(assignmentController, course);
+        StudentAssignmentView studentAssignmentView = new StudentAssignmentView(assignmentController, course);
 
         // Replace the current view with the new instance of AssignmentListView
         removeAll();
         setLayout(new BorderLayout());
-        add(assignmentListView, BorderLayout.CENTER);
+        add(studentAssignmentView, BorderLayout.CENTER);
         revalidate();
         repaint();
     }

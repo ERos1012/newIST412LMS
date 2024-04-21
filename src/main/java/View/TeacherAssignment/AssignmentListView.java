@@ -1,14 +1,18 @@
-package View;
+package View.TeacherAssignment;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import Controller.AssignmentController;
 import java.awt.*;
 import java.util.List;
+import java.time.LocalDate;
 
 import Controller.CourseController;
 import Model.Assignment;
 import Model.Course;
+import View.AssignmentSubmissionsView;
+import View.StudentCourseView;
+import View.StudentSelectedCourseView;
 
 public class AssignmentListView extends JPanel {
     private AssignmentController manager;
@@ -39,13 +43,16 @@ public class AssignmentListView extends JPanel {
         JButton removeButton = new JButton("Remove");
         JButton updateButton = new JButton("Update");
         JButton backButton = new JButton("Back");
+        JButton viewSubmissionsButton = new JButton("View Submissions");
         JButton allCoursesButton = new JButton("All Courses");
+
 
 
         buttonPanel.add(backButton);
         buttonPanel.add(addButton);
         buttonPanel.add(removeButton);
         buttonPanel.add(updateButton);
+        buttonPanel.add(viewSubmissionsButton);
         buttonPanel.add(allCoursesButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
@@ -86,6 +93,8 @@ public class AssignmentListView extends JPanel {
         // Back button action
         backButton.addActionListener(e -> switchToSelectedCourseView(course));
 
+        viewSubmissionsButton.addActionListener(e -> viewSubmissions());
+
         allCoursesButton.addActionListener(e -> switchToCourseView());
 
         // Panel to display active courses
@@ -104,12 +113,12 @@ public class AssignmentListView extends JPanel {
 
     private void switchToSelectedCourseView(Course course) {
         AssignmentController assignmentController = new AssignmentController();
-        SelectedCourseView selectedCourseView = new SelectedCourseView(course, assignmentController);
+        StudentSelectedCourseView studentSelectedCourseView = new StudentSelectedCourseView(course, assignmentController);
 
         // Replace the current panel with the SelectedCourseView
         removeAll();
         setLayout(new BorderLayout());
-        add(selectedCourseView, BorderLayout.CENTER);
+        add(studentSelectedCourseView, BorderLayout.CENTER);
         revalidate();
         repaint();
     }
@@ -117,21 +126,24 @@ public class AssignmentListView extends JPanel {
     private void switchToCourseView() {
         // Create a new instance of CourseView
         CourseController courseController = new CourseController();  // Assuming you can create a new instance of CourseController
-        CourseView courseView = new CourseView(courseController);
+        StudentCourseView studentCourseView = new StudentCourseView(courseController);
 
         // Replace the current panel with the SelectedCourseView
         removeAll();
         setLayout(new BorderLayout());
-        add(courseView, BorderLayout.CENTER);
+        add(studentCourseView, BorderLayout.CENTER);
         revalidate();
         repaint();
     }
 
     private void showAssignmentDialog(Assignment assignment) {
+        LocalDate today = LocalDate.now();
+        String todayDate = today.toString(); // Convert the date to a string format
+
         // Text fields pre-populated with assignment data if updating, empty if adding
         JTextField nameField = new JTextField(assignment != null ? assignment.getName() : "", 20);
         JTextField descField = new JTextField(assignment != null ? assignment.getDescription() : "", 20);
-        JTextField dateField = new JTextField(assignment != null ? assignment.getDueDate() : "", 20);
+        JTextField dateField = new JTextField(assignment != null ? assignment.getDueDate() : todayDate, 20);
 
         // Set up the panel to get user input
         JPanel dialogPanel = new JPanel(new GridLayout(0, 2));
@@ -199,6 +211,38 @@ public class AssignmentListView extends JPanel {
             refreshAssignmentList();
             refreshActiveCoursesTable();
         }
+    }
+
+    private void viewSubmissions() {
+        // Get the selected row in the active courses table
+        int selectedRow = activeCoursesTable.getSelectedRow();
+
+        // Check if a row is selected
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an assignment to view submissions.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Get the assignment from the selected row
+        int assignmentId = (int) activeCoursesTableModel.getValueAt(selectedRow, 0);
+        String assignmentName = (String) activeCoursesTableModel.getValueAt(selectedRow, 1);
+        String assignmentDueDate = (String) activeCoursesTableModel.getValueAt(selectedRow, 2);
+
+        // Create an Assignment object for the selected assignment
+        Assignment selectedAssignment = new Assignment();
+        selectedAssignment.setId(assignmentId);
+        selectedAssignment.setName(assignmentName);
+        selectedAssignment.setDueDate(assignmentDueDate);
+
+        // Create a new instance of AssignmentSubmissionsView, passing the course and assignment models
+        AssignmentSubmissionsView submissionsView = new AssignmentSubmissionsView(course, selectedAssignment, manager);
+
+        // Replace the current panel with the submissions view
+        removeAll();
+        setLayout(new BorderLayout());
+        add(submissionsView, BorderLayout.CENTER);
+        revalidate();
+        repaint();
     }
 
 

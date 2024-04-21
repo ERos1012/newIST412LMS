@@ -1,6 +1,7 @@
 package Controller;
 
 import Model.Assignment;
+import Model.AssignmentSubmission;
 import Model.Course;
 
 import java.sql.*;
@@ -14,7 +15,7 @@ public class AssignmentController {
     private static final int PORT = 3306;
     private static final String USERNAME = "root";
     private static final String PASSWORD = "$Qqhollowpsu45";
-    private static final String DATABASE_NAME = "412 LMS";
+    private static final String DATABASE_NAME = "412lms";
     private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME;
 
     public static void addAssignment(Assignment assignment) {
@@ -160,7 +161,83 @@ public class AssignmentController {
         return null;
     }
 
-    public void submitAssignment(int assignmentId, File attachedFile) {
-        // Code to handle assignment submission
+    public void submitAssignment(AssignmentSubmission submission) {
+        // SQL query to insert the assignment submission
+        String sql = "INSERT INTO AssignmentSubmissions (studentId, assignmentId, courseId, submissionText) VALUES (?, ?, ?, ?)";
+
+        // Connection to the database
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            // Set the parameters for the SQL query
+            pstmt.setInt(1, submission.getStudentId());
+            pstmt.setInt(2, submission.getAssignmentId());
+            pstmt.setInt(3, submission.getCourseId());
+            pstmt.setString(4, submission.getTextSubmission());
+
+            // Execute the SQL query
+            pstmt.executeUpdate();
+            System.out.println("Assignment submitted successfully.");
+
+        } catch (SQLException e) {
+            // Handle any SQL exceptions
+            System.out.println("Error submitting assignment: " + e.getMessage());
+        }
     }
+
+
+    public boolean hasExistingSubmission(int studentId, int assignmentId, int courseId) {
+        String sql = "SELECT COUNT(*) FROM AssignmentSubmissions WHERE studentId = ? AND assignmentId = ? AND courseId = ?";
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setInt(1, studentId);
+            pstmt.setInt(2, assignmentId);
+            pstmt.setInt(3, courseId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    int count = rs.getInt(1);
+                    return count > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking existing submission: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public List<AssignmentSubmission> getAssignmentSubmissions(int assignmentId, int courseId) {
+        List<AssignmentSubmission> submissions = new ArrayList<>();
+        // SQL query to fetch assignment submissions based on the given assignment ID and course ID
+        String sql = "SELECT * FROM AssignmentSubmissions WHERE assignmentId = ? AND courseId = ?";
+
+        // Establish a connection to the database
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            // Set the parameters for the SQL query
+            pstmt.setInt(1, assignmentId);
+            pstmt.setInt(2, courseId);
+
+            // Execute the query and iterate over the results
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    // Create an AssignmentSubmission object for each row in the result set
+                    AssignmentSubmission submission = new AssignmentSubmission(
+                            rs.getInt("id"),
+                            rs.getInt("studentId"),
+                            rs.getInt("assignmentId"),
+                            rs.getInt("courseId"),
+                            rs.getString("submissionText")
+                    );
+                    // Add the submission to the list
+                    submissions.add(submission);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching assignment submissions: " + e.getMessage());
+        }
+        return submissions;
+    }
+
 }

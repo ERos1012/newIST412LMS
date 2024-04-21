@@ -43,7 +43,7 @@ public class QuizCreationView extends JFrame {
         dueDateField = new JTextField(10);
 
         courseSelector = new JComboBox<>();
-        populateCourseSelector();
+//        populateCourseSelector();
 
         formPanel.add(new JLabel("Course:"));
         formPanel.add(courseSelector);
@@ -122,13 +122,13 @@ public class QuizCreationView extends JFrame {
         return selectedCourse != null ? selectedCourse.getId() : -1;
     }
 
-    private void populateCourseSelector() {
-        DefaultComboBoxModel<Course> model = new DefaultComboBoxModel<>();
-        model.addElement(new Course("title", 1, "Mathematics 101", "title"));
-        model.addElement(new Course("title", 2, "Physics 101", "title"));
-        model.addElement(new Course("title", 3, "History 101", "title"));
-        courseSelector.setModel(model);
-    }
+//    private void populateCourseSelector() {
+//        DefaultComboBoxModel<Course> model = new DefaultComboBoxModel<>();
+//        model.addElement(new Course("title", 1, "Mathematics 101", "title"));
+//        model.addElement(new Course("title", 2, "Physics 101", "title"));
+//        model.addElement(new Course("title", 3, "History 101", "title"));
+//        courseSelector.setModel(model);
+//    }
 
     private void populateFields(Quiz quiz) {
         quizNameField.setText(quiz.getName());
