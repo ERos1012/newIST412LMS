@@ -1,5 +1,33 @@
 # IST412 - Group 4: Learning Management System
 
+# M04-A03 Two Implemented Use Cases Integrated with First Usecase + Login/Authentication Implementation with Clean, Refactored Code
+
+## Part 1:
+Refactoring Implementation:
+- Deleted unused classes such as QuizApp and other unrelated logic
+- Deleted code that was not being used in the Java file
+- Created different views for various users (administrator and student) instead of having only one view for both
+- Consolidated features and use cases by integrating them into the MainView instead of being in their own window
+
+## Part 2:
+Two Use Cases:
+**Courses**
+- 
+
+**Messaging**
+- 
+
+Additional Use Case:
+**Quiz**
+- 
+
+| Team-Member ID | Team-Member Name | Percentage Efforts in Particular Assignment | Brief of Efforts in the Tasks Contribution |
+| -------------- | ---------------- | ------------------------------------------- | ------------------------------------------ |
+| evr5419        | Eric Rosario     |                                             |                                            |
+| klh6157        | Kai Huang        |                                             |                                            |
+| agn5089        | Anish Nangare    |                                             |                                            |
+| bqz5148        | Bryan Zhou       |                                             |                                            |
+
 # M03-A04 Implemented Design Patterns 
 
 | Team-Member ID | Team-Member Name | Design Pattern Implemented    | Classes / Interfaces implementing the Design Pattern                                                                                                                                               |
