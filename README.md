@@ -1,8 +1,8 @@
 # IST412 - Group 4: Learning Management System
 
-# M04-A03 Two Implemented Use Cases Integrated with First Usecase + Login/Authentication Implementation with Clean, Refactored Code
+## M04-A03 Two Implemented Use Cases Integrated with First Usecase + Login/Authentication Implementation with Clean, Refactored Code
 
-## Part 1
+### Part 1
 
 Refactoring Implementation:
 
@@ -11,29 +11,33 @@ Refactoring Implementation:
 - Created different views for various users (administrator and student) instead of having only one view for both
 - Consolidated features and use cases by integrating them into the MainView instead of being in their own window
 
-## Part 2
+### Part 2
 
-Two Use Cases:
-**Courses**
--
+**Two Use Cases:**
 
-**Messaging**
--
+Courses
 
-Additional Use Case:
-**Quiz**
+- The Courses use case allows the teacher to set courses which will connect with other use cases such as Assignments and Quizzes
+
+Messaging
+
+- The Messaging use case allows teacher and student to communicate with each other
+
+**Additional Use Case:**
+
+Quiz
 
 - The Quiz use case is implemented in the Teacher view
 - It allows the teacher to create a quiz with three types of questions: multiple choice/ true or false/ essay type
-- The questions are stored in the database with a corresponding quiz_id
+- The questions are stored in the database with a corresponding quiz_id to connect quizzes with its quiz items
 - The quiz is displayed in the Student view but the "Take Quiz" functionality is still not implemented
 
 | Team-Member ID | Team-Member Name | Percentage Efforts in Particular Assignment | Brief of Efforts in the Tasks Contribution |
 | -------------- | ---------------- | ------------------------------------------- | ------------------------------------------ |
-| evr5419        | Eric Rosario     |                                             |                                            |
-| klh6157        | Kai Huang        |                                             |                                            |
-| agn5089        | Anish Nangare    |                                             |                                            |
-| bqz5148        | Bryan Zhou       |                                             |                                            |
+| evr5419        | Eric Rosario     |                                             |  Created and implemented the Quiz Functionality                                          |
+| klh6157        | Kai Huang        |                                             |  Created FacadeController as Design Pattern                                          |
+| agn5089        | Anish Nangare    |                                             |  Created and implemented the Messaging Functionality                                          |
+| bqz5148        | Bryan Zhou       |                                             |  Created and implemented the Course and Assignment Functionality                                          |
 
 # M03-A04 Implemented Design Patterns
 
