@@ -93,8 +93,8 @@ public class MainView extends JFrame {
         JPanel studentGradeView = new StudentGradeView(new Model.Grade());
         cardsPanel.add(studentGradeView, "StudentGrade");
 
-        JPanel studentQuizView = new StudentQuizView();
-        cardsPanel.add(studentQuizView, "StudentQuiz");
+//        JPanel studentQuizView = new StudentQuizView();
+//        cardsPanel.add(studentQuizView, "StudentQuiz");
 
         // Set action listeners to switch views based on user type
         dashboardButton.addActionListener(e -> {

@@ -33,47 +33,44 @@ public class StudentCourseView extends JPanel {
 
         // Panel for buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton addButton = new JButton("Add");
-        JButton removeButton = new JButton("Remove");
-        JButton updateButton = new JButton("Update");
         JButton viewButton = new JButton("View Course");
 
-        buttonPanel.add(addButton);
-        buttonPanel.add(removeButton);
-        buttonPanel.add(updateButton);
+//        buttonPanel.add(addButton);
+//        buttonPanel.add(removeButton);
+//        buttonPanel.add(updateButton);
         buttonPanel.add(viewButton);
         add(buttonPanel, BorderLayout.SOUTH);
-
-        // Add button action
-        addButton.addActionListener(e -> showCourseDialog(null));
-
-        // Remove button action
-        removeButton.addActionListener(e -> showRemoveCourseDialog());
-
-        // Update button action
-        updateButton.addActionListener(e -> {
-            // Create a dialog to enter the course ID
-            JTextField idField = new JTextField(10);
-            JPanel idPanel = new JPanel();
-            idPanel.add(new JLabel("ID:"));
-            idPanel.add(idField);
-
-            int result = JOptionPane.showConfirmDialog(this, idPanel, "Enter Course ID", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-            if (result == JOptionPane.OK_OPTION) {
-                String idText = idField.getText().trim();
-                if (!idText.isEmpty()) {
-                    int id = Integer.parseInt(idText);
-                    Course course = manager.getCourse(id);
-                    if (course != null) {
-                        showCourseDialog(course);
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Course not found!", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(this, "Please enter Course ID!", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
+//
+//        // Add button action
+//        addButton.addActionListener(e -> showCourseDialog(null));
+//
+//        // Remove button action
+//        removeButton.addActionListener(e -> showRemoveCourseDialog());
+//
+//        // Update button action
+//        updateButton.addActionListener(e -> {
+//            // Create a dialog to enter the course ID
+//            JTextField idField = new JTextField(10);
+//            JPanel idPanel = new JPanel();
+//            idPanel.add(new JLabel("ID:"));
+//            idPanel.add(idField);
+//
+//            int result = JOptionPane.showConfirmDialog(this, idPanel, "Enter Course ID", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+//            if (result == JOptionPane.OK_OPTION) {
+//                String idText = idField.getText().trim();
+//                if (!idText.isEmpty()) {
+//                    int id = Integer.parseInt(idText);
+//                    Course course = manager.getCourse(id);
+//                    if (course != null) {
+//                        showCourseDialog(course);
+//                    } else {
+//                        JOptionPane.showMessageDialog(this, "Course not found!", "Error", JOptionPane.ERROR_MESSAGE);
+//                    }
+//                } else {
+//                    JOptionPane.showMessageDialog(this, "Please enter Course ID!", "Error", JOptionPane.ERROR_MESSAGE);
+//                }
+//            }
+//        });
 
         // View button action
         viewButton.addActionListener(e -> viewSelectedCourse());

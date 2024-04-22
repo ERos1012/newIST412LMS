@@ -17,11 +17,18 @@ Refactoring Implementation:
 
 Courses
 
-- The Courses use case allows the teacher to set courses which will connect with other use cases such as Assignments and Quizzes
+- The Courses use case allows the teacher to set courses which will connect with other use cases such as Assignments and Quizzes. 
+  - When logging in with teacher authentication, you can navigate to courses and manage courses, select a course, view the course, 
+    view the assignments, select assignments and then manage assignments or view submissions
+  - When logging in with student authentication, you can navigate to courses and select a course, view the course, 
+    view the assignments, select an assignment, view the assignment, and then enter a submission. You can 
+    only submit one per user id, aka one attempt per person per assignment.
 
 Messaging
 
-- The Messaging use case allows teacher and student to communicate with each other
+- Message controller connects with the buttons on message view to provide the needed calls to the database. 
+  The message view creates a popup box that allows users to send and receive messages. There is the need to verify your id in the inbox. 
+  once you have sent a message. you can check in the inbox by clicking refresh and entering Id and student.
 
 **Additional Use Case:**
 
@@ -32,21 +39,21 @@ Quiz
 - The questions are stored in the database with a corresponding quiz_id to connect quizzes with its quiz items
 - The quiz is displayed in the Student view but the "Take Quiz" functionality is still not implemented
 
-| Team-Member ID | Team-Member Name | Percentage Efforts in Particular Assignment | Brief of Efforts in the Tasks Contribution |
-| -------------- | ---------------- | ------------------------------------------- | ------------------------------------------ |
-| evr5419        | Eric Rosario     |                                             |  Created and implemented the Quiz Functionality                                          |
-| klh6157        | Kai Huang        |                                             |  Created FacadeController as Design Pattern                                          |
-| agn5089        | Anish Nangare    |                                             |  Created and implemented the Messaging Functionality                                          |
-| bqz5148        | Bryan Zhou       |                                             |  Created and implemented the Course and Assignment Functionality                                          |
+| Team-Member ID | Team-Member Name | Percentage Efforts in Particular Assignment | Brief of Efforts in the Tasks Contribution                      |
+|----------------|------------------|---------------------------------------------|-----------------------------------------------------------------|
+| evr5419        | Eric Rosario     | 25%                                         | Created and implemented the Quiz Functionality                  |
+| klh6157        | Kai Huang        | 25%                                         | Created and implemented the Course and Assignment Functionality |
+| agn5089        | Anish Nangare    | 25%                                         | Created and implemented the Messaging Functionality             |
+| bqz5148        | Bryan Zhou       | 25%                                         | Created and implemented the Course and Assignment Functionality |
 
 # M03-A04 Implemented Design Patterns
 
-| Team-Member ID | Team-Member Name | Design Pattern Implemented    | Classes / Interfaces implementing the Design Pattern                                                                                                                                               |
-| -------------- | ---------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| evr5419        | Eric Rosario     | Factory Method and Navigation | Model: Question, MultipleChoiceQuestion, TrueOrFalseQuestion<br>Controller: QuizController<br>Factory: QuestionCreator, MultipleChoiceQuestionCreator, TrueOrFalseQuestionCreator<br>View: QuizApp, MainView |
-| klh6157        | Kai Huang        | Facade and Event Calender                           | Controller: EventController, EventCalendarController, FacadeController<br>Model: Event, EventCalendar                                                                                                                                                                                                   |
-| bqz5148        | Bryan Zhou       | Decorator and Morphing Control                              | View: CourseView / DecoratorPattern, ClearDashboard, CourseDecorator, DashboardDecorator, MessageDecorator                                                                                                                                                                                                   |
-| agn5089        | Anish Nangare    |                               |  
+| Team-Member ID | Team-Member Name | Design Pattern Implemented     | Classes / Interfaces implementing the Design Pattern                                                                                                                                                         |
+|----------------|------------------|--------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| evr5419        | Eric Rosario     | Factory Method and Navigation  | Model: Question, MultipleChoiceQuestion, TrueOrFalseQuestion<br>Controller: QuizController<br>Factory: QuestionCreator, MultipleChoiceQuestionCreator, TrueOrFalseQuestionCreator<br>View: QuizApp, MainView |
+| klh6157        | Kai Huang        | Facade and Event Calender      | Controller: EventController, EventCalendarController, FacadeController<br>Model: Event, EventCalendar                                                                                                        |
+| bqz5148        | Bryan Zhou       | Decorator and Morphing Control | View: CourseView / DecoratorPattern, ClearDashboard, CourseDecorator, DashboardDecorator, MessageDecorator                                                                                                   |
+| agn5089        | Anish Nangare    |                                |  
 
 # Test Harness for AssignmentController
 
