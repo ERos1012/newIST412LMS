@@ -12,7 +12,7 @@ public class MessageController {
     private static final String HOSTNAME = "localhost";
     private static final int PORT = 3306;
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "jisquz-hatdod-1gyqVu";
+    private static final String PASSWORD = "$Qqhollowpsu45";
     private static final String DATABASE_NAME = "412lms";
     private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME + "?useSSL=false";
 
@@ -25,7 +25,7 @@ public class MessageController {
     }
 
     public void sendMessage(Message message) {
-        String sql = "INSERT INTO message (sender_id, receiver_id, content, timestamp, sender_type) VALUES (?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO Messages (sender_id, receiver_id, message, timestamp, sender_type) VALUES (?, ?, ?, ?, ?);";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, message.getSenderId());
@@ -41,7 +41,7 @@ public class MessageController {
     }
 
     public Message viewMessage(int messageId) {
-        final String sql = "SELECT * FROM message WHERE id = ?";
+        final String sql = "SELECT * FROM Messages WHERE id = ?";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, messageId);
@@ -64,7 +64,7 @@ public class MessageController {
     }
 
     public void deleteMessage(int messageId) {
-        final String sql = "DELETE FROM message WHERE id = ?";
+        final String sql = "DELETE FROM Messages WHERE id = ?";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, messageId);
@@ -81,7 +81,7 @@ public class MessageController {
 
     public List<Message> getAllMessagesForUser(int userId, String userType) {
         List<Message> messages = new ArrayList<>();
-        String sql = "SELECT * FROM message WHERE receiver_id = ? AND sender_type = ?";
+        String sql = "SELECT * FROM Messages WHERE receiver_id = ? AND sender_type = ?";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, userId);

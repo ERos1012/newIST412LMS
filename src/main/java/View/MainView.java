@@ -93,9 +93,6 @@ public class MainView extends JFrame {
         JPanel studentGradeView = new StudentGradeView(new Model.Grade());
         cardsPanel.add(studentGradeView, "StudentGrade");
 
-//        JPanel studentMessageView = new StudentMessageView();
-//        cardsPanel.add(studentMessageView, "StudentMessage");t
-
         JPanel studentQuizView = new StudentQuizView();
         cardsPanel.add(studentQuizView, "StudentQuiz");
 
@@ -129,6 +126,30 @@ public class MainView extends JFrame {
                 cardLayout.show(cardsPanel, "Quiz");
             } else if (userType.equals("student")) {
                 cardLayout.show(cardsPanel, "StudentQuiz");
+            }
+        });
+
+        messageButton.addActionListener(e -> {
+            if (userType.equals("teacher")) {
+                // Create a new instance of MessageView
+                MessageView messageView = new MessageView();
+
+                // Show the MessageView as a modal dialog
+                JDialog dialog = new JDialog(MainView.this, "Message", true);
+                dialog.add(messageView);
+                dialog.setSize(500, 400);
+                dialog.setLocationRelativeTo(MainView.this);
+                dialog.setVisible(true);
+            } else if (userType.equals("student")) {
+                // Create a new instance of MessageView
+                StudentMessageView studentMessageView = new StudentMessageView();
+
+                // Show the MessageView as a modal dialog
+                JDialog dialog = new JDialog(MainView.this, "Message", true);
+                dialog.add(studentMessageView);
+                dialog.setSize(500, 400);
+                dialog.setLocationRelativeTo(MainView.this);
+                dialog.setVisible(true);
             }
         });
 

@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.Timestamp;
 
-public class MessageView extends JFrame {
+public class MessageView extends JPanel {
 
     private CardLayout cardLayout = new CardLayout();
     private JPanel cardsPanel = new JPanel(cardLayout); // Panel that contains different views
@@ -15,16 +15,14 @@ public class MessageView extends JFrame {
     private JTextArea messageBodyField; // Global declaration to ensure accessibility
 
     public MessageView() {
-        super("Message System");
+        super(); // Initialize JPanel
         messageController = new MessageController();
         initializeUI();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(500, 400);
-        setLocationRelativeTo(null);
-        setVisible(true);
     }
 
     private void initializeUI() {
+        setLayout(new BorderLayout());
+
         JPanel navigationPanel = setupNavigationPanel();
         setupMessagePanels();
 
@@ -82,7 +80,7 @@ public class MessageView extends JFrame {
         JPanel createMessagePanel = new JPanel(new GridLayout(5, 2));
         JTextField senderIdField = new JTextField();
         JTextField recipientIdField = new JTextField();
-        messageBodyField = new JTextArea(5, 20); // initialized here to ensure it's accessible
+        messageBodyField = new JTextArea(5, 20);
         JButton sendButton = new JButton("Send Message");
 
         createMessagePanel.add(new JLabel("Sender ID:"));
@@ -112,6 +110,13 @@ public class MessageView extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new MessageView().setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Message System");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(500, 400);
+            frame.setLocationRelativeTo(null);
+            frame.add(new StudentMessageView());
+            frame.setVisible(true);
+        });
     }
 }
