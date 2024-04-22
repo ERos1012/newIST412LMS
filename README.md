@@ -2,24 +2,31 @@
 
 # M04-A03 Two Implemented Use Cases Integrated with First Usecase + Login/Authentication Implementation with Clean, Refactored Code
 
-## Part 1:
+## Part 1
+
 Refactoring Implementation:
+
 - Deleted unused classes such as QuizApp and other unrelated logic
 - Deleted code that was not being used in the Java file
 - Created different views for various users (administrator and student) instead of having only one view for both
 - Consolidated features and use cases by integrating them into the MainView instead of being in their own window
 
-## Part 2:
+## Part 2
+
 Two Use Cases:
 **Courses**
-- 
+-
 
 **Messaging**
-- 
+-
 
 Additional Use Case:
 **Quiz**
-- 
+
+- The Quiz use case is implemented in the Teacher view
+- It allows the teacher to create a quiz with three types of questions: multiple choice/ true or false/ essay type
+- The questions are stored in the database with a corresponding quiz_id
+- The quiz is displayed in the Student view but the "Take Quiz" functionality is still not implemented
 
 | Team-Member ID | Team-Member Name | Percentage Efforts in Particular Assignment | Brief of Efforts in the Tasks Contribution |
 | -------------- | ---------------- | ------------------------------------------- | ------------------------------------------ |
@@ -28,7 +35,7 @@ Additional Use Case:
 | agn5089        | Anish Nangare    |                                             |                                            |
 | bqz5148        | Bryan Zhou       |                                             |                                            |
 
-# M03-A04 Implemented Design Patterns 
+# M03-A04 Implemented Design Patterns
 
 | Team-Member ID | Team-Member Name | Design Pattern Implemented    | Classes / Interfaces implementing the Design Pattern                                                                                                                                               |
 | -------------- | ---------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -36,7 +43,6 @@ Additional Use Case:
 | klh6157        | Kai Huang        | Facade and Event Calender                           | Controller: EventController, EventCalendarController, FacadeController<br>Model: Event, EventCalendar                                                                                                                                                                                                   |
 | bqz5148        | Bryan Zhou       | Decorator and Morphing Control                              | View: CourseView / DecoratorPattern, ClearDashboard, CourseDecorator, DashboardDecorator, MessageDecorator                                                                                                                                                                                                   |
 | agn5089        | Anish Nangare    |                               |  
-
 
 # Test Harness for AssignmentController
 
@@ -67,12 +73,14 @@ This test harness is designed to test the functionalities of the AssignmentContr
 - Checks if the assignment was successfully removed.
 
 ### Messaging
+
 1. To send a message from a student to a teacher:
     - Run the `Main` class.
     - Follow the prompts to send a message.
     - Input values: Sender student ID, recipient teacher ID, message content, and timestamp.
 
 ### Course Management
+
 1. To add a new course:
     - Run the `Main` class.
     - Follow the prompts to add a new course.
@@ -84,12 +92,14 @@ This test harness is designed to test the functionalities of the AssignmentContr
     - Input values: Course code of the course to remove.
 
 ### Quiz Management
+
 1. To add a quiz:
     - Run the `Main` class.
     - Follow the prompts to add a new quiz.
     - Input values: Quiz ID, course ID, max score, quiz name, due date, and list of questions.
 
 ### Student Management
+
 1. To add a student:
     - Run the `Main` class.
     - Follow the prompts to add a new student.
@@ -116,6 +126,7 @@ This test harness is designed to test the functionalities of the AssignmentContr
     - Input values: Course code.
 
 ### Teacher Management
+
 1. To add a teacher:
     - Run the `Main` class.
     - Follow the prompts to add a new teacher.
@@ -169,4 +180,3 @@ This test harness is designed to test the functionalities of the AssignmentContr
 | klh6157 + Kai Huang     | - Wrote the Word Document detailing class structure and functionality                     |
 | agn5089 + Anish Nangare | - Wrote the Word Document detailing class structure and functionality                     |
 | bqz5148 + Bryan Zhou    | - Programmed the class structure and methods                                              |
-
