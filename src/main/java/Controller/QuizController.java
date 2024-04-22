@@ -14,8 +14,8 @@ public class QuizController {
     private static final String HOSTNAME = "localhost";
     private static final int PORT = 3306;
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "$Qqhollowpsu45"; // Change 'password' to your MySQL root password
-    private static final String DATABASE_NAME = "412lms"; // Adjust the database name as needed
+    private static final String PASSWORD = "kathricz2003"; 
+    private static final String DATABASE_NAME = "412lms"; 
     private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME + "?useSSL=false";
 
     public QuizController() {
@@ -35,7 +35,7 @@ public class QuizController {
     }
 
     public Quiz addQuiz(Quiz quiz) {
-        final String sql = "INSERT INTO quizzes (course_id, name, due_date) VALUES (?, ?, ?);";
+        final String sql = "INSERT INTO quiz (courseId, name, dueDate) VALUES (?, ?, ?);";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setInt(1, quiz.getCourseId());
@@ -58,7 +58,7 @@ public class QuizController {
     }
 
     public Quiz updateQuiz(Quiz quiz) {
-        final String sql = "UPDATE quizzes SET course_id = ?, name = ?, due_date = ? WHERE id = ?;";
+        final String sql = "UPDATE quiz SET courseId = ?, name = ?, dueDate = ? WHERE id = ?;";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, quiz.getCourseId());
@@ -74,7 +74,7 @@ public class QuizController {
     }
 
     public void removeQuiz(Quiz quiz) {
-        final String sql = "DELETE FROM quizzes WHERE id = ?;";
+        final String sql = "DELETE FROM quiz WHERE id = ?;";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, quiz.getId());
@@ -86,7 +86,7 @@ public class QuizController {
 
     public List<Quiz> getAllQuizzes() {
         List<Quiz> quizzes = new ArrayList<>();
-        final String sql = "SELECT id, course_id, name, due_date FROM quizzes;";
+        final String sql = "SELECT id, courseId, name, dueDate FROM quiz;";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
@@ -94,9 +94,9 @@ public class QuizController {
                 List<Question> questions = getQuestionsForQuizId(rs.getInt("id"));
                 Quiz quiz = new Quiz(
                     rs.getInt("id"),
-                    rs.getInt("course_id"),
+                    rs.getInt("courseId"),
                     rs.getString("name"),
-                    rs.getString("due_date"),
+                    rs.getString("dueDate"),
                     questions
                 );
                 quizzes.add(quiz);
@@ -187,4 +187,15 @@ public class QuizController {
     {
         System.out.println("Quiz graded: --> " + "Student number " + studentId + " has a grade of " + grade);
     }
+
+    public void addQuestionToQuiz(Question question, int quizId) {
+        if (question != null) {
+            try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+                question.addQuestionToDatabase(con, quizId);
+            } catch (SQLException e) {
+                System.err.println("Error adding question to quiz: " + e.getMessage());
+            }
+        }
+    }
+    
 }

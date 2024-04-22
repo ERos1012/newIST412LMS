@@ -68,13 +68,12 @@ public class Quiz {
 
     @Override
     public String toString() {
-        return "Quiz{" +
+        return "Quiz:" +
                 "id=" + id +
                 ", courseId=" + courseId +
                 ", name='" + name + '\'' +
                 ", dueDate='" + dueDate + '\'' +
-                ", questionsCount=" + questions.size() +
-                '}';
+                ", questionsCount=" + questions.size(); 
     }
 
     // Remove or finalize the setId method based on your requirements

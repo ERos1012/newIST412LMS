@@ -13,7 +13,6 @@ public class TeacherQuizView extends JFrame {
     private DefaultListModel<Quiz> quizListModel;
     private JButton createNewQuizButton, removeQuizButton, updateQuizButton;
     private QuizController quizController;
-    private Quiz quiz;
 
     public TeacherQuizView(QuizController quizController) {
         this.quizController = quizController;

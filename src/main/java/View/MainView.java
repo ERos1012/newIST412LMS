@@ -4,13 +4,17 @@ import javax.swing.*;
 
 import Controller.CourseController;
 import Controller.LoginController;
+import Controller.QuizController;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * The MainView class represents the home page of the application with a navigation bar
- * to direct users to different functionalities like Assignment, Course, Grade, Message, and Quiz views,
+ * The MainView class represents the home page of the application with a
+ * navigation bar
+ * to direct users to different functionalities like Assignment, Course, Grade,
+ * Message, and Quiz views,
  * displaying them under the navigation bar and inside the same window.
  */
 public class MainView extends JFrame {
@@ -64,7 +68,6 @@ public class MainView extends JFrame {
             }
         });
 
-
         navigationPanel.setVisible(false); // Hide navigation panel initially
 
         // Add LoginView to the cardsPanel
@@ -93,10 +96,10 @@ public class MainView extends JFrame {
         JPanel studentGradeView = new StudentGradeView(new Model.Grade());
         cardsPanel.add(studentGradeView, "StudentGrade");
 
-//        JPanel studentMessageView = new StudentMessageView();
-//        cardsPanel.add(studentMessageView, "StudentMessage");t
+        // JPanel studentMessageView = new StudentMessageView();
+        // cardsPanel.add(studentMessageView, "StudentMessage");t
 
-        JPanel studentQuizView = new StudentQuizView();
+        JPanel studentQuizView = new StudentQuizView(new QuizController());
         cardsPanel.add(studentQuizView, "StudentQuiz");
 
         // Set action listeners to switch views based on user type
@@ -131,7 +134,6 @@ public class MainView extends JFrame {
                 cardLayout.show(cardsPanel, "StudentQuiz");
             }
         });
-
 
         // Set up the main frame layout
         setLayout(new BorderLayout());

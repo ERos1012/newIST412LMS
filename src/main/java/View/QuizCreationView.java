@@ -98,38 +98,32 @@ public class QuizCreationView extends JFrame {
     private void saveQuiz(ActionEvent e) {
         String quizName = quizNameField.getText().trim();
         String dueDate = dueDateField.getText().trim();
-        int courseId = getCurrentCourseId();
-
-        if (currentQuiz == null) {
-            currentQuiz = new Quiz(generateQuizId(), courseId, quizName, dueDate, questions);
+        int courseId = getCurrentCourseId();  // This might return -1 if no course is selected
+    
+        if (quizName.isEmpty() || dueDate.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter both name and due date for the quiz.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    
+        if (currentQuiz == null || currentQuiz.getId() <= 0) {
+            currentQuiz = new Quiz(0, courseId, quizName, dueDate, new ArrayList<>()); // Create a quiz with or without a course
+            currentQuiz = quizController.addOrUpdateQuiz(currentQuiz);
         } else {
             currentQuiz.setCourseId(courseId);
             currentQuiz.setName(quizName);
             currentQuiz.setDueDate(dueDate);
-            currentQuiz.setQuestions(questions);
+            quizController.updateQuiz(currentQuiz);
         }
-
-        quizController.addOrUpdateQuiz(currentQuiz);
-        dispose();
     }
-
-    private int generateQuizId() {
-        return Math.abs(new Random().nextInt());
-    }
+    
 
     private int getCurrentCourseId() {
         Course selectedCourse = (Course) courseSelector.getSelectedItem();
-        return selectedCourse != null ? selectedCourse.getId() : -1;
+        return (selectedCourse != null) ? selectedCourse.getId() : -1;
     }
+    
 
-//    private void populateCourseSelector() {
-//        DefaultComboBoxModel<Course> model = new DefaultComboBoxModel<>();
-//        model.addElement(new Course("title", 1, "Mathematics 101", "title"));
-//        model.addElement(new Course("title", 2, "Physics 101", "title"));
-//        model.addElement(new Course("title", 3, "History 101", "title"));
-//        courseSelector.setModel(model);
-//    }
-
+    
     private void populateFields(Quiz quiz) {
         quizNameField.setText(quiz.getName());
         dueDateField.setText(quiz.getDueDate());
@@ -209,10 +203,26 @@ public class QuizCreationView extends JFrame {
                 optionDField.getText(),
                 correctAnswerBox.getSelectedItem().toString()
             );
-            questions.add(mcQuestion);
-            refreshQuestionsPanel();
+    
+            // Ensure there's a quiz where to add the question
+            if (currentQuiz == null || currentQuiz.getId() <= 0) {
+                // Prompt to save the quiz details first
+                saveQuiz(null);  // Adjust this method to not dispose unless completely done
+            }
+    
+            // Check if the quiz was successfully saved and has an ID
+            if (currentQuiz != null && currentQuiz.getId() > 0) {
+                quizController.addQuestionToQuiz(mcQuestion, currentQuiz.getId());
+                questions.add(mcQuestion);
+                refreshQuestionsPanel();
+            } else {
+                JOptionPane.showMessageDialog(this, "Quiz must be saved before adding questions.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
+    
+    
+    
     
     private void addTrueFalseQuestion(ActionEvent e) {
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
@@ -227,14 +237,27 @@ public class QuizCreationView extends JFrame {
         int result = JOptionPane.showConfirmDialog(this, panel, "Add True/False Question",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
+            if (questionField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please fill in the question field.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             TrueOrFalseQuestion tfQuestion = new TrueOrFalseQuestion(
-                questionField.getText(),
+                questionField.getText().trim(),
                 correctAnswerBox.getSelectedItem().toString()
             );
-            questions.add(tfQuestion);
-            refreshQuestionsPanel();
+    
+            if (currentQuiz == null || currentQuiz.getId() <= 0) {
+                saveQuiz(null); // Make sure the quiz is saved and has an ID
+            }
+    
+            if (currentQuiz != null && currentQuiz.getId() > 0) {
+                quizController.addQuestionToQuiz(tfQuestion, currentQuiz.getId());
+                questions.add(tfQuestion);
+                refreshQuestionsPanel();
+            }
         }
     }
+    
     
     private void addEssayQuestion(ActionEvent e) {
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
@@ -246,11 +269,24 @@ public class QuizCreationView extends JFrame {
         int result = JOptionPane.showConfirmDialog(this, panel, "Add Essay Question",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
-            EssayQuestion essayQuestion = new EssayQuestion(questionField.getText());
-            questions.add(essayQuestion);
-            refreshQuestionsPanel();
+            if (questionField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please fill in the question field.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            EssayQuestion essayQuestion = new EssayQuestion(questionField.getText().trim());
+    
+            if (currentQuiz == null || currentQuiz.getId() <= 0) {
+                saveQuiz(null); // Make sure the quiz is saved and has an ID
+            }
+    
+            if (currentQuiz != null && currentQuiz.getId() > 0) {
+                quizController.addQuestionToQuiz(essayQuestion, currentQuiz.getId());
+                questions.add(essayQuestion);
+                refreshQuestionsPanel();
+            }
         }
     }
+    
     
 
     public static void main(String[] args) {
