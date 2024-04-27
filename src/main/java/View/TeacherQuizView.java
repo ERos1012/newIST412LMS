@@ -8,7 +8,7 @@ import Model.Quiz;
 
 import java.util.List;
 
-public class TeacherQuizView extends JFrame {
+public class TeacherQuizView extends JPanel {
     private JList<Quiz> quizList;
     private DefaultListModel<Quiz> quizListModel;
     private JButton createNewQuizButton, removeQuizButton, updateQuizButton;
@@ -16,9 +16,7 @@ public class TeacherQuizView extends JFrame {
 
     public TeacherQuizView(QuizController quizController) {
         this.quizController = quizController;
-        setTitle("Quiz Management");
         setSize(800, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         initializeUI();
         loadQuizzes();
@@ -29,6 +27,18 @@ public class TeacherQuizView extends JFrame {
         quizList = new JList<>(quizListModel);
         quizList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane quizScrollPane = new JScrollPane(quizList);
+
+        quizList.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof Quiz) {
+                    Quiz quiz = (Quiz) value;
+                    setText(String.format("%s - Due: %s, Course ID: %d", quiz.getName(), quiz.getDueDate(), quiz.getCourseId()));
+                }
+                return this;
+            }
+        });
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         createNewQuizButton = new JButton("Create New Quiz");
@@ -61,7 +71,7 @@ public class TeacherQuizView extends JFrame {
     private void removeSelectedQuiz(ActionEvent e) {
         Quiz selectedQuiz = quizList.getSelectedValue();
         if (selectedQuiz != null) {
-            quizController.removeQuiz(selectedQuiz);
+            quizController.removeQuiz(selectedQuiz.getId());  // Use getId() to pass the quiz's ID
             loadQuizzes(); // Reload quizzes after removal
             JOptionPane.showMessageDialog(this, "Quiz removed: " + selectedQuiz.getName(), "Remove Quiz",
                     JOptionPane.INFORMATION_MESSAGE);
@@ -70,7 +80,7 @@ public class TeacherQuizView extends JFrame {
                     JOptionPane.WARNING_MESSAGE);
         }
     }
-
+    
     private void updateSelectedQuiz(ActionEvent e) {
         Quiz selectedQuiz = quizList.getSelectedValue();
         if (selectedQuiz != null) {
@@ -87,15 +97,26 @@ public class TeacherQuizView extends JFrame {
                     JOptionPane.WARNING_MESSAGE);
         }
     }
-
+    
     private void loadQuizzes() {
-        quizListModel.removeAllElements();
-        List<Quiz> quizzes = quizController.getAllQuizzes();
-        for (Quiz quiz : quizzes) {
-            quizListModel.addElement(quiz);
+        quizListModel.removeAllElements();  // Clear existing quizzes from the list model
+        List<Quiz> quizzes = quizController.getAllQuizzes();  // Fetch quizzes from the controller
+        
+        if (quizzes.isEmpty()) {
+            System.out.println("No quizzes found.");  // Debugging output
         }
-    }
-
+        
+        // Iterate through each quiz and only add it to the list if it's active
+        for (Quiz quiz : quizzes) {
+            if (quiz.isActive()) {  // Check if the quiz is active
+                quizListModel.addElement(quiz);  // Only add active quizzes
+                System.out.println("Loaded quiz: " + quiz.getName());  // Debugging output for active quizzes
+            } else {
+                System.out.println("Inactive quiz not loaded: " + quiz.getName());  // Debugging output for inactive quizzes
+            }
+        }
+    }    
+    
     public static void main(String[] args) {
         QuizController controller = new QuizController(); // Make sure this is properly implemented
         TeacherQuizView frame = new TeacherQuizView(controller);

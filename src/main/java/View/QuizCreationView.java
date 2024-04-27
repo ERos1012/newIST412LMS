@@ -106,8 +106,8 @@ public class QuizCreationView extends JFrame {
         }
     
         if (currentQuiz == null || currentQuiz.getId() <= 0) {
-            currentQuiz = new Quiz(0, courseId, quizName, dueDate, new ArrayList<>()); // Create a quiz with or without a course
-            currentQuiz = quizController.addOrUpdateQuiz(currentQuiz);
+            currentQuiz = new Quiz(0, courseId, quizName, dueDate, new ArrayList<>(), false); // Create a quiz with or without a course
+            currentQuiz = quizController.addQuiz(currentQuiz);
         } else {
             currentQuiz.setCourseId(courseId);
             currentQuiz.setName(quizName);
@@ -116,13 +116,10 @@ public class QuizCreationView extends JFrame {
         }
     }
     
-
     private int getCurrentCourseId() {
         Course selectedCourse = (Course) courseSelector.getSelectedItem();
         return (selectedCourse != null) ? selectedCourse.getId() : -1;
     }
-    
-
     
     private void populateFields(Quiz quiz) {
         quizNameField.setText(quiz.getName());

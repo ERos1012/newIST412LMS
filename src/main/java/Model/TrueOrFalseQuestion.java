@@ -3,6 +3,7 @@ package Model;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 public class TrueOrFalseQuestion extends Question {
     private String correctAnswer;
@@ -30,5 +31,13 @@ public class TrueOrFalseQuestion extends Question {
 
     public String getCorrectAnswer() {
         return correctAnswer;
+    }
+
+    public List<String> getChoices() {
+        return List.of("True", "False");
+    }
+
+    public int getQuestionId() {
+        return 0;
     }
 }

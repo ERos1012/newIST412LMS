@@ -3,6 +3,7 @@ package Model;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Represents an essay question, which requires a text-based answer.
@@ -25,5 +26,13 @@ public class EssayQuestion extends Question {
     @Override
     public String getText() {
         return text;
+    }
+
+    public int getQuestionId() {
+        return 0;
+    }
+
+    public List<String> getChoices() {
+        return List.of();
     }
 }

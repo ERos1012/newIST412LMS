@@ -13,16 +13,39 @@ public class Quiz {
     private String name;
     private String dueDate;
     private List<Question> questions;
+    private boolean isActive;  // Flag to indicate if the quiz is active or not
 
     /**
-     * Constructs a new Quiz object with the specified details.
+     * Constructs a new Quiz object with the specified details and active status.
      */
-    public Quiz(int id, int courseId, String name, String dueDate, List<Question> questions) {
+    public Quiz(int id, int courseId, String name, String dueDate, List<Question> questions, boolean isActive) {
         this.id = id;
         this.courseId = courseId;
         this.name = name;
         this.dueDate = dueDate;
-        this.questions = (questions == null) ? new ArrayList<>() : questions; // Ensure list is never null
+        this.questions = (questions == null) ? new ArrayList<>() : questions;
+        this.isActive = isActive;  // Initialize the isActive flag during construction
+    }
+
+    // Existing getter and setter methods
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    @Override
+    public String toString() {
+        return "Quiz:" +
+                "id=" + id +
+                ", courseId=" + courseId +
+                ", name='" + name + '\'' +
+                ", dueDate='" + dueDate + '\'' +
+                ", questionsCount=" + questions.size() +
+                ", isActive=" + isActive; // Include isActive in the toString output
     }
 
     // Getter methods remain unchanged, but getQuestions now returns List<Question>
@@ -64,16 +87,6 @@ public class Quiz {
      */
     public String getDueDate() {
         return dueDate;
-    }
-
-    @Override
-    public String toString() {
-        return "Quiz:" +
-                "id=" + id +
-                ", courseId=" + courseId +
-                ", name='" + name + '\'' +
-                ", dueDate='" + dueDate + '\'' +
-                ", questionsCount=" + questions.size(); 
     }
 
     // Remove or finalize the setId method based on your requirements
