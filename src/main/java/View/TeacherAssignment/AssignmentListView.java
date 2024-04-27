@@ -11,6 +11,7 @@ import Controller.CourseController;
 import Model.Assignment;
 import Model.Course;
 import View.AssignmentSubmissionsView;
+import View.SelectedCourseView;
 import View.StudentCourseView;
 import View.StudentSelectedCourseView;
 
@@ -113,12 +114,12 @@ public class AssignmentListView extends JPanel {
 
     private void switchToSelectedCourseView(Course course) {
         AssignmentController assignmentController = new AssignmentController();
-        StudentSelectedCourseView studentSelectedCourseView = new StudentSelectedCourseView(course, assignmentController);
+        SelectedCourseView selectedCourseView = new SelectedCourseView(course, assignmentController);
 
         // Replace the current panel with the SelectedCourseView
         removeAll();
         setLayout(new BorderLayout());
-        add(studentSelectedCourseView, BorderLayout.CENTER);
+        add(selectedCourseView, BorderLayout.CENTER);
         revalidate();
         repaint();
     }

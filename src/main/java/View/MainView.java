@@ -35,6 +35,7 @@ public class MainView extends JFrame {
         JButton gradeButton = new JButton("Grade");
         JButton messageButton = new JButton("Message");
         JButton quizButton = new JButton("Quiz");
+        JButton logoutButton = new JButton("Logout");
 
         // Add buttons to the navigation panel
         navigationPanel.add(dashboardButton);
@@ -42,6 +43,7 @@ public class MainView extends JFrame {
         navigationPanel.add(gradeButton);
         navigationPanel.add(messageButton);
         navigationPanel.add(quizButton);
+        navigationPanel.add(logoutButton);
 
         LoginController loginController = new LoginController();
         LoginView loginView = new LoginView(loginController);
@@ -151,6 +153,13 @@ public class MainView extends JFrame {
                 dialog.setLocationRelativeTo(MainView.this);
                 dialog.setVisible(true);
             }
+        });
+
+        logoutButton.addActionListener(e -> {
+            // Hide the navigation panel and switch to the LoginView
+            navigationPanel.setVisible(false);
+            cardLayout.show(cardsPanel, "Login");
+            userType = ""; // Clear the user type upon logout
         });
 
 

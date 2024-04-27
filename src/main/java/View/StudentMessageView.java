@@ -64,7 +64,7 @@ public class StudentMessageView extends JPanel {
         refreshButton.addActionListener(e -> {
             int userId = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter your ID:"));
             String userType = JOptionPane.showInputDialog(this, "Enter your type (student/teacher):");
-            java.util.List<Message> messages = messageController.getAllMessagesForUser(userId, userType);
+            java.util.List<Message> messages = messageController.getAllMessagesForUser(userId);
             DefaultListModel<String> model = new DefaultListModel<>();
             for (Message message : messages) {
                 model.addElement("From: " + message.getSenderId() + " - " + message.getContent());
@@ -98,7 +98,7 @@ public class StudentMessageView extends JPanel {
                     JOptionPane.showMessageDialog(this, "Message cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                messageController.sendMessage(new Message(senderId, recipientId, message, "student", new Timestamp(System.currentTimeMillis())));
+                messageController.sendMessage(new Message(senderId, recipientId, message, new Timestamp(System.currentTimeMillis())));
                 JOptionPane.showMessageDialog(this, "Message sent!");
                 messageBodyField.setText(""); // Clear the message field after sending
             } catch (NumberFormatException ex) {
