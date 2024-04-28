@@ -5,18 +5,15 @@ import Model.TrueOrFalseQuestion;
 import Model.EssayQuestion;
 import Model.MultipleChoiceQuestion;
 import Model.Question;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class QuizController {
-    private static final String HOSTNAME = "localhost";
-    private static final int PORT = 3306;
+    // Database configuration
+    private static final String URL = "jdbc:mysql://localhost:3306/412lms?useSSL=false";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "kathricz2003"; 
-    private static final String DATABASE_NAME = "412lms"; 
-    private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME + "?useSSL=false";
+    private static final String PASSWORD = "kathricz2003";
 
     public QuizController() {
         try {
@@ -35,12 +32,14 @@ public class QuizController {
     }
 
     public Quiz addQuiz(Quiz quiz) {
-        final String sql = "INSERT INTO quiz (courseId, name, dueDate) VALUES (?, ?, ?);";
+        final String sql = "INSERT INTO quiz (courseId, name, dueDate, isActive) VALUES (?, ?, ?, ?);";
+        quiz.setActive(true);
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setInt(1, quiz.getCourseId());
             pstmt.setString(2, quiz.getName());
             pstmt.setString(3, quiz.getDueDate());
+            pstmt.setBoolean(4, quiz.isActive());
             pstmt.executeUpdate();
 
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
@@ -48,7 +47,6 @@ public class QuizController {
                     quiz.setId(generatedKeys.getInt(1));
                 }
             }
-
             addQuizQuestions(quiz.getId(), quiz.getQuestions());
             return quiz;
         } catch (SQLException e) {
@@ -58,13 +56,14 @@ public class QuizController {
     }
 
     public Quiz updateQuiz(Quiz quiz) {
-        final String sql = "UPDATE quiz SET courseId = ?, name = ?, dueDate = ? WHERE id = ?;";
+        final String sql = "UPDATE quiz SET courseId = ?, name = ?, dueDate = ?, isActive = ? WHERE id = ?;";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, quiz.getCourseId());
             pstmt.setString(2, quiz.getName());
             pstmt.setString(3, quiz.getDueDate());
-            pstmt.setInt(4, quiz.getId());
+            pstmt.setBoolean(4, quiz.isActive());
+            pstmt.setInt(5, quiz.getId());
             pstmt.executeUpdate();
             return quiz;
         } catch (SQLException e) {
@@ -73,20 +72,20 @@ public class QuizController {
         }
     }
 
-    public void removeQuiz(Quiz quiz) {
-        final String sql = "DELETE FROM quiz WHERE id = ?;";
+    public void removeQuiz(int quizId) {
+        final String sql = "UPDATE quiz SET isActive = false WHERE id = ?;";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setInt(1, quiz.getId());
+            pstmt.setInt(1, quizId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("Error removing quiz: " + e.getMessage());
+            System.err.println("Error deactivating quiz: " + e.getMessage());
         }
     }
 
     public List<Quiz> getAllQuizzes() {
         List<Quiz> quizzes = new ArrayList<>();
-        final String sql = "SELECT id, courseId, name, dueDate FROM quiz;";
+        final String sql = "SELECT id, courseId, name, dueDate, isActive FROM quiz;";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
@@ -97,15 +96,23 @@ public class QuizController {
                     rs.getInt("courseId"),
                     rs.getString("name"),
                     rs.getString("dueDate"),
-                    questions
+                    questions,
+                    rs.getBoolean("isActive")
                 );
                 quizzes.add(quiz);
+                // Print details of each quiz fetched to the console for debugging
+                System.out.println("Fetched quiz: ID=" + quiz.getId() + ", Name=" + quiz.getName() + ", Active=" + quiz.isActive());
             }
+            // Print the total number of quizzes fetched
+            System.out.println("Total quizzes fetched: " + quizzes.size());
         } catch (SQLException e) {
             System.err.println("Error fetching quizzes: " + e.getMessage());
+            e.printStackTrace();  // Provide a stack trace for deeper debugging information
         }
         return quizzes;
     }
+    
+    // Other methods remain unchanged
 
     private void addQuizQuestions(int quizId, List<Question> questions) {
         final String sql = "INSERT INTO quiz_questions (quiz_id, question_text, type) VALUES (?, ?, ?);";
@@ -135,7 +142,7 @@ public class QuizController {
                     String type = rs.getString("type");
                     Question question = null;
                     switch (type) {
-                        case "MultipleChoice":
+                        case "Multiple Choice":
                             question = new MultipleChoiceQuestion(
                                 rs.getString("question_text"),
                                 rs.getString("choice_a"),
@@ -145,7 +152,7 @@ public class QuizController {
                                 rs.getString("correct_answer")
                             );
                             break;
-                        case "TrueFalse":
+                        case "True/False":
                             question = new TrueOrFalseQuestion(
                                 rs.getString("question_text"),
                                 rs.getString("correct_answer")
@@ -159,6 +166,10 @@ public class QuizController {
                     }
                     if (question != null) {
                         questions.add(question);
+                        System.out.println("Loaded question: " + question.getText());
+                        if (question instanceof MultipleChoiceQuestion || question instanceof TrueOrFalseQuestion) {
+                            System.out.println("Choices: " + String.join(", ", question.getChoices()));
+                        }
                     }
                 }
             }
@@ -168,12 +179,13 @@ public class QuizController {
         return questions;
     }
     
+    
      /**
      * Views details of a specific quiz.
      */
     public Quiz viewQuiz(Quiz quiz) {
         if (quiz == null) {
-            return new Quiz(0, 0, "Default Quiz", "2024-01-01", new ArrayList<>());
+            return new Quiz(0, 0, "Default Quiz", "2024-01-01", new ArrayList<>(), true);
         }
         // logic for retrieving and returning a Quiz object
         return quiz;

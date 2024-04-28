@@ -4,13 +4,17 @@ import javax.swing.*;
 
 import Controller.CourseController;
 import Controller.LoginController;
+import Controller.QuizController;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * The MainView class represents the home page of the application with a navigation bar
- * to direct users to different functionalities like Assignment, Course, Grade, Message, and Quiz views,
+ * The MainView class represents the home page of the application with a
+ * navigation bar
+ * to direct users to different functionalities like Assignment, Course, Grade,
+ * Message, and Quiz views,
  * displaying them under the navigation bar and inside the same window.
  */
 public class MainView extends JFrame {
@@ -82,8 +86,12 @@ public class MainView extends JFrame {
         JPanel gradeView = new GradeView(new Model.Grade());
         cardsPanel.add(gradeView, "Grade");
 
-        JPanel quizView = new QuizView();
-        cardsPanel.add(quizView, "Quiz");
+        // Instantiate and add quiz views for both teacher and student
+        QuizController quizController = new QuizController();
+        JPanel teacherQuizView = new TeacherQuizView(quizController);
+        JPanel studentQuizView = new StudentQuizView(quizController);
+        cardsPanel.add(teacherQuizView, "TeacherQuiz");
+        cardsPanel.add(studentQuizView, "StudentQuiz");
 
         // Instantiate and add student views
         JPanel studentDashboardView = new StudentDashboardView();
@@ -95,8 +103,8 @@ public class MainView extends JFrame {
         JPanel studentGradeView = new StudentGradeView(new Model.Grade());
         cardsPanel.add(studentGradeView, "StudentGrade");
 
-//        JPanel studentQuizView = new StudentQuizView();
-//        cardsPanel.add(studentQuizView, "StudentQuiz");
+        // JPanel studentQuizView = new StudentQuizView();
+        // cardsPanel.add(studentQuizView, "StudentQuiz");
 
         // Set action listeners to switch views based on user type
         dashboardButton.addActionListener(e -> {
@@ -123,13 +131,8 @@ public class MainView extends JFrame {
             }
         });
 
-        quizButton.addActionListener(e -> {
-            if (userType.equals("teacher")) {
-                cardLayout.show(cardsPanel, "Quiz");
-            } else if (userType.equals("student")) {
-                cardLayout.show(cardsPanel, "StudentQuiz");
-            }
-        });
+        quizButton.addActionListener(
+                e -> cardLayout.show(cardsPanel, userType.equals("teacher") ? "TeacherQuiz" : "StudentQuiz"));
 
         messageButton.addActionListener(e -> {
             if (userType.equals("teacher")) {

@@ -57,5 +57,11 @@ public class MultipleChoiceQuestion extends Question {
         return correctAnswer;
     }
 
-    
+    public List<String> getChoices() {
+        return List.of(choiceA, choiceB, choiceC, choiceD);
+    }
+
+    public int getQuestionId() {
+        return 0;
+    }
 }
