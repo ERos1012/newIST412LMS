@@ -6,26 +6,23 @@ public class LoginController {
     private static final String HOSTNAME = "localhost";
     private static final int PORT = 3306;
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "$Qqhollowpsu45";
+    private static final String PASSWORD = "jisquz-hatdod-1gyqVu";
     private static final String DATABASE_NAME = "412lms";
-    private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME;
+    private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME + "?useSSL=false";
 
     private String userType = ""; // Field to keep track of user type (teacher or student)
+    private int userId = -1; // Field to keep track of the logged-in user's ID
 
-    /**
-     * Checks if the username and password match in the Authentication table.
-     * If a match is found, sets the user type to "teacher".
-     */
     private boolean checkTeacherCredentials(String username, String password) {
-        String query = "SELECT * FROM Authentication WHERE username = ? AND password = ?";
+        String query = "SELECT id, username, password FROM Authentication WHERE username = ? AND password = ?";
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, username);
             statement.setString(2, password);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    // Matching credentials found in the Authentication table (teacher)
                     userType = "teacher";
+                    userId = resultSet.getInt("id"); // Store the user ID
                     return true;
                 }
             }
@@ -35,20 +32,16 @@ public class LoginController {
         return false;
     }
 
-    /**
-     * Checks if the username and password match in the StudentAuthentication table.
-     * If a match is found, sets the user type to "student".
-     */
     private boolean checkStudentCredentials(String username, String password) {
-        String query = "SELECT * FROM StudentAuthentication WHERE username = ? AND password = ?";
+        String query = "SELECT id, username, password FROM StudentAuthentication WHERE username = ? AND password = ?";
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, username);
             statement.setString(2, password);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    // Matching credentials found in the StudentAuthentication table (student)
                     userType = "student";
+                    userId = resultSet.getInt("id"); // Store the user ID
                     return true;
                 }
             }
@@ -58,12 +51,7 @@ public class LoginController {
         return false;
     }
 
-    /**
-     * Matches the username and password in either the Authentication or StudentAuthentication table.
-     * Returns true if a match is found in either table.
-     */
     public boolean matchUsernamePassword(String username, String password) {
-        // Load the MySQL JDBC driver
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
@@ -72,24 +60,14 @@ public class LoginController {
             return false;
         }
 
-        // First check for teacher credentials
-        if (checkTeacherCredentials(username, password)) {
-            return true;
-        }
-
-        // If not found, check for student credentials
-        if (checkStudentCredentials(username, password)) {
-            return true;
-        }
-
-        // Return false if no matching username or password found
-        return false;
+        return checkTeacherCredentials(username, password) || checkStudentCredentials(username, password);
     }
 
-    /**
-     * Returns the user type (teacher or student) after a successful login.
-     */
     public String getUserType() {
         return userType;
+    }
+
+    public int getUserId() {
+        return userId;
     }
 }

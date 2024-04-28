@@ -42,8 +42,9 @@ public class LoginView extends JPanel {
 
                 // Call loginController method to check authentication
                 if (loginController.matchUsernamePassword(username, password)) {
-                    // Retrieve the user type (student or teacher) from the LoginController
+                    // Retrieve the user type and user ID from the LoginController
                     String userType = loginController.getUserType();
+                    int userId = loginController.getUserId(); // Retrieve the user ID
 
                     // Display appropriate message based on user type
                     if (userType.equals("student")) {
@@ -52,7 +53,7 @@ public class LoginView extends JPanel {
                         JOptionPane.showMessageDialog(LoginView.this, "Teacher successfully logged in", "Login Success", JOptionPane.INFORMATION_MESSAGE);
                     }
 
-                    // Notify listener
+                    // Notify listener, perhaps passing the userId or doing something with it here if needed
                     if (loginListener != null) {
                         loginListener.actionPerformed(e);
                     }

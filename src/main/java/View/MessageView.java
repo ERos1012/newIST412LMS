@@ -8,24 +8,27 @@ import java.awt.*;
 import java.sql.Timestamp;
 
 public class MessageView extends JPanel {
-
     private CardLayout cardLayout = new CardLayout();
-    private JPanel cardsPanel = new JPanel(cardLayout); // Panel that contains different views
-    private MessageController messageController; // Controller for message functionalities
-    private JTextArea messageBodyField; // Global declaration to ensure accessibility
+    private JPanel cardsPanel = new JPanel(cardLayout);
+    private MessageController messageController;
+    private JTextArea messageBodyField;
+    private JTextField recipientIdField;
+    private JComboBox<String> receiverTypeComboBox;  // Dropdown for selecting receiver type
+    private int userId; // Store the user ID
+    private String userType; // Store the user type
 
-    public MessageView() {
-        super(); // Initialize JPanel
+    public MessageView(int userId, String userType) {
+        super();
+        this.userId = userId;
+        this.userType = userType;
         messageController = new MessageController();
         initializeUI();
     }
 
     private void initializeUI() {
         setLayout(new BorderLayout());
-
         JPanel navigationPanel = setupNavigationPanel();
         setupMessagePanels();
-
         add(navigationPanel, BorderLayout.NORTH);
         add(cardsPanel, BorderLayout.CENTER);
     }
@@ -62,9 +65,7 @@ public class MessageView extends JPanel {
         JList<String> messageList = new JList<>();
         JButton refreshButton = new JButton("Refresh");
         refreshButton.addActionListener(e -> {
-            int userId = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter your ID:"));
-            String userType = JOptionPane.showInputDialog(this, "Enter your type (student/teacher):");
-            java.util.List<Message> messages = messageController.getAllMessagesForUser(userId, userType);
+            java.util.List<Message> messages = messageController.getAllMessagesForUser(this.userId, this.userType);
             DefaultListModel<String> model = new DefaultListModel<>();
             for (Message message : messages) {
                 model.addElement("From: " + message.getSenderId() + " - " + message.getContent());
@@ -77,46 +78,36 @@ public class MessageView extends JPanel {
     }
 
     private void setupCreateMessagePanel() {
-        JPanel createMessagePanel = new JPanel(new GridLayout(5, 2));
-        JTextField senderIdField = new JTextField();
-        JTextField recipientIdField = new JTextField();
+        JPanel createMessagePanel = new JPanel(new GridLayout(6, 2));  // Adjust grid layout for additional dropdown
+        recipientIdField = new JTextField();
         messageBodyField = new JTextArea(5, 20);
+        receiverTypeComboBox = new JComboBox<>(new String[]{"student", "teacher"});  // Dropdown to select receiver type
+
         JButton sendButton = new JButton("Send Message");
 
-        createMessagePanel.add(new JLabel("Sender ID:"));
-        createMessagePanel.add(senderIdField);
         createMessagePanel.add(new JLabel("Recipient ID:"));
         createMessagePanel.add(recipientIdField);
+        createMessagePanel.add(new JLabel("Receiver Type:"));
+        createMessagePanel.add(receiverTypeComboBox);
         createMessagePanel.add(new JLabel("Message:"));
         createMessagePanel.add(new JScrollPane(messageBodyField));
         sendButton.addActionListener(e -> {
             try {
-                int senderId = Integer.parseInt(senderIdField.getText().trim());
                 int recipientId = Integer.parseInt(recipientIdField.getText().trim());
                 String message = messageBodyField.getText().trim();
+                String receiverType = (String) receiverTypeComboBox.getSelectedItem();  // Get selected receiver type
                 if (message.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Message cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                messageController.sendMessage(new Message(senderId, recipientId, message, "student", new Timestamp(System.currentTimeMillis())));
+                messageController.sendMessage(new Message(this.userId, recipientId, message, this.userType, receiverType, new Timestamp(System.currentTimeMillis())));
                 JOptionPane.showMessageDialog(this, "Message sent!");
                 messageBodyField.setText(""); // Clear the message field after sending
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Please ensure IDs are numeric.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please ensure recipient ID is numeric.", "Input Error", JOptionPane.ERROR_MESSAGE);
             }
         });
         createMessagePanel.add(sendButton);
         cardsPanel.add(createMessagePanel, "Create Message");
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Message System");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(500, 400);
-            frame.setLocationRelativeTo(null);
-            frame.add(new StudentMessageView());
-            frame.setVisible(true);
-        });
     }
 }

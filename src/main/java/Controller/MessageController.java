@@ -1,9 +1,6 @@
 package Controller;
 
 import Model.Message;
-import Model.Student;
-import Model.Teacher;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +9,7 @@ public class MessageController {
     private static final String HOSTNAME = "localhost";
     private static final int PORT = 3306;
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "$Qqhollowpsu45";
+    private static final String PASSWORD = "jisquz-hatdod-1gyqVu";
     private static final String DATABASE_NAME = "412lms";
     private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME + "?useSSL=false";
 
@@ -25,7 +22,7 @@ public class MessageController {
     }
 
     public void sendMessage(Message message) {
-        String sql = "INSERT INTO Messages (sender_id, receiver_id, message, timestamp, sender_type) VALUES (?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO Messages (sender_id, receiver_id, message, timestamp, sender_type, receiver_type) VALUES (?, ?, ?, ?, ?, ?);";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, message.getSenderId());
@@ -33,6 +30,7 @@ public class MessageController {
             pstmt.setString(3, message.getContent());
             pstmt.setTimestamp(4, message.getTimestamp());
             pstmt.setString(5, message.getSenderType());
+            pstmt.setString(6, message.getReceiverType());  // Ensure this aligns with your updated Message model
             pstmt.executeUpdate();
             System.out.println("Message sent successfully.");
         } catch (SQLException e) {
@@ -53,7 +51,8 @@ public class MessageController {
                         rs.getInt("receiver_id"),
                         rs.getString("message"),
                         rs.getTimestamp("timestamp"),
-                        rs.getString("sender_type")
+                        rs.getString("sender_type"),
+                        rs.getString("receiver_type")  // Handle retrieval of the receiver type
                     );
                 }
             }
@@ -81,7 +80,7 @@ public class MessageController {
 
     public List<Message> getAllMessagesForUser(int userId, String userType) {
         List<Message> messages = new ArrayList<>();
-        String sql = "SELECT * FROM Messages WHERE receiver_id = ? AND sender_type = ?";
+        String sql = "SELECT * FROM Messages WHERE receiver_id = ? AND receiver_type = ?";  // Adjusted to filter by receiver_type instead of sender_type
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, userId);
@@ -94,7 +93,8 @@ public class MessageController {
                         rs.getInt("receiver_id"),
                         rs.getString("message"),
                         rs.getTimestamp("timestamp"),
-                        rs.getString("sender_type")
+                        rs.getString("sender_type"),
+                        rs.getString("receiver_type")  // Ensure this is retrieved
                     ));
                 }
             }
