@@ -21,11 +21,14 @@ public class MainView extends JFrame {
 
     private CardLayout cardLayout = new CardLayout();
     private JPanel cardsPanel = new JPanel(cardLayout); // Panel that contains different views
+    private LoginController loginController;
+    private int userId; // To store the logged-in user's ID
     private String userType = ""; // To keep track of the user type
 
     public MainView() {
         super("Group 4 LMS");
         userType = "";
+        loginController = new LoginController();
         initializeUI();
     }
 
@@ -55,6 +58,7 @@ public class MainView extends JFrame {
         loginView.setLoginListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                userId = loginController.getUserId();
                 // Get the user type from the login controller
                 userType = loginController.getUserType();
 
@@ -177,11 +181,25 @@ public class MainView extends JFrame {
         setLocationRelativeTo(null); // Center the frame on the screen
     }
 
-    /**
-     * The main method to launch the MainView as the application's home page.
-     *
-     * @param args the command-line arguments
-     */
+    private void setupViewSwitchers(JButton dashboardButton, JButton courseButton, JButton gradeButton, JButton quizButton, JButton messageButton) {
+        dashboardButton.addActionListener(e -> cardLayout.show(cardsPanel, userType.equals("teacher") ? "Dashboard" : "StudentDashboard"));
+        courseButton.addActionListener(e -> cardLayout.show(cardsPanel, userType.equals("teacher") ? "Course" : "StudentCourse"));
+        gradeButton.addActionListener(e -> cardLayout.show(cardsPanel, userType.equals("teacher") ? "Grade" : "StudentGrade"));
+        quizButton.addActionListener(e -> cardLayout.show(cardsPanel, userType.equals("teacher") ? "Quiz" : "StudentQuiz"));
+        messageButton.addActionListener(e -> showMessageView());
+    }
+
+    private void showMessageView() {
+        if (!userType.isEmpty()) {
+            MessageView messageView = new MessageView(userId, userType); // Initialize with user ID and type
+            JDialog dialog = new JDialog(this, "Message", true);
+            dialog.add(messageView);
+            dialog.setSize(500, 400);
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
+        }
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new MainView().setVisible(true));
     }

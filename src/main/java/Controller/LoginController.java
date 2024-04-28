@@ -6,7 +6,7 @@ public class LoginController {
     private static final String HOSTNAME = "localhost";
     private static final int PORT = 3306;
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "kathricz2003";
+    private static final String PASSWORD = "$Qqhollowpsu45";
     private static final String DATABASE_NAME = "412lms";
     private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME;
 
@@ -26,6 +26,7 @@ public class LoginController {
                 if (resultSet.next()) {
                     // Matching credentials found in the Authentication table (teacher)
                     userType = "teacher";
+                    userId = resultSet.getInt("id");
                     return true;
                 }
             }
@@ -49,6 +50,7 @@ public class LoginController {
                 if (resultSet.next()) {
                     // Matching credentials found in the StudentAuthentication table (student)
                     userType = "student";
+                    userId = resultSet.getInt("id"); // Store the user ID
                     return true;
                 }
             }
@@ -91,5 +93,9 @@ public class LoginController {
      */
     public String getUserType() {
         return userType;
+    }
+
+    public int getUserId() {
+        return userId;
     }
 }

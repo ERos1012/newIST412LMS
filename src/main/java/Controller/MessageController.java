@@ -25,13 +25,15 @@ public class MessageController {
     }
 
     public void sendMessage(Message message) {
-        String sql = "INSERT INTO Messages (sender_id, receiver_id, message, timestamp) VALUES (?, ?, ?, ?);";
+        String sql = "INSERT INTO Messages (sender_id, receiver_id, message, timestamp, sender_type, receiver_type) VALUES (?, ?, ?, ?, ?, ?);";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, message.getSenderId());
             pstmt.setInt(2, message.getReceiverId());
             pstmt.setString(3, message.getContent());
             pstmt.setTimestamp(4, message.getTimestamp());
+            pstmt.setString(5, message.getSenderType());
+            pstmt.setString(6, message.getReceiverType());  // Ensure this aligns with your updated Message model
             pstmt.executeUpdate();
             System.out.println("Message sent successfully.");
         } catch (SQLException e) {
@@ -51,7 +53,9 @@ public class MessageController {
                         rs.getInt("sender_id"),
                         rs.getInt("receiver_id"),
                         rs.getString("message"),
-                        rs.getTimestamp("timestamp")
+                        rs.getTimestamp("timestamp"),
+                        rs.getString("sender_type"),
+                        rs.getString("receiver_type")  // Handle retrieval of the receiver type
                     );
                 }
             }
@@ -77,12 +81,13 @@ public class MessageController {
         }
     }
 
-    public List<Message> getAllMessagesForUser(int userId) {
+    public List<Message> getAllMessagesForUser(int userId, String userType) {
         List<Message> messages = new ArrayList<>();
-        String sql = "SELECT * FROM Messages WHERE receiver_id = ?";
+        String sql = "SELECT * FROM Messages WHERE receiver_id = ? AND receiver_type = ?";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, userId);
+            pstmt.setString(2, userType);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     messages.add(new Message(
@@ -90,7 +95,9 @@ public class MessageController {
                         rs.getInt("sender_id"),
                         rs.getInt("receiver_id"),
                         rs.getString("message"),
-                        rs.getTimestamp("timestamp")
+                        rs.getTimestamp("timestamp"),
+                        rs.getString("sender_type"),
+                        rs.getString("receiver_type")
                     ));
                 }
             }
