@@ -123,4 +123,9 @@ public class Course {
         isActive = active;
     }
 
+    @Override
+    public String toString() {
+        return "name='" + name + '\'' +
+                ", program='" + program;
+    }
 }

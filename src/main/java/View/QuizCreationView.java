@@ -43,7 +43,7 @@ public class QuizCreationView extends JFrame {
         dueDateField = new JTextField(10);
 
         courseSelector = new JComboBox<>();
-//        populateCourseSelector();
+       populateCourseSelector();
 
         formPanel.add(new JLabel("Course:"));
         formPanel.add(courseSelector);
@@ -85,6 +85,18 @@ public class QuizCreationView extends JFrame {
         add(southPanel, BorderLayout.SOUTH);
     }
 
+    private void populateCourseSelector() {
+        try {
+            List<Course> courses = quizController.getCourseController().getActiveCourses(); // Ensure there's a method to get CourseController from QuizController
+            for (Course course : courses) {
+                courseSelector.addItem(course);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Failed to load courses: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+
     private JScrollPane createScrollPane() {
         questionsPanel = new JPanel();
         questionsPanel.setLayout(new BoxLayout(questionsPanel, BoxLayout.Y_AXIS));
@@ -106,7 +118,7 @@ public class QuizCreationView extends JFrame {
         }
     
         if (currentQuiz == null || currentQuiz.getId() <= 0) {
-            currentQuiz = new Quiz(0, courseId, quizName, dueDate, new ArrayList<>(), false); // Create a quiz with or without a course
+            currentQuiz = new Quiz(0, courseId, quizName, dueDate, new ArrayList<>(), false, false); // Create a quiz with or without a course
             currentQuiz = quizController.addQuiz(currentQuiz);
         } else {
             currentQuiz.setCourseId(courseId);
