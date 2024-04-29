@@ -28,14 +28,13 @@ public class Quiz {
     /**
      * Constructs a new Quiz object with the specified details and active status.
      */
-    public Quiz(int id, int courseId, String name, String dueDate, List<Question> questions, boolean isActive, boolean isDone) {
+    public Quiz(int id, int courseId, String name, String dueDate, List<Question> questions, boolean isActive) {
         this.id = id;
         this.courseId = courseId;
         this.name = name;
         this.dueDate = dueDate;
         this.questions = (questions == null) ? new ArrayList<>() : questions;
-        this.isActive = isActive;  
-        this.isDone = isDone;
+        this.isActive = isActive;
     }
 
     // Existing getter and setter methods

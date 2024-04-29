@@ -15,13 +15,15 @@ public class StudentQuizView extends JPanel implements QuizCompletionListener {
     private DefaultListModel<Quiz> quizListModel;
     private JButton startQuizButton;
     private QuizController quizController;
+    private int userId;
 
-    public StudentQuizView(QuizController quizController) {
+    public StudentQuizView(QuizController quizController, int userId) {
         if (quizController == null) {
             throw new IllegalArgumentException("QuizController cannot be null");
         }
         this.quizController = quizController;
         this.quizController.addQuizCompletionListener(this); // Register as a listener
+        this.userId = userId;
         initializeUI();
         loadQuizzes();  // This method will be called to fetch and display quizzes
     }
@@ -50,7 +52,7 @@ public class StudentQuizView extends JPanel implements QuizCompletionListener {
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 Quiz quiz = (Quiz) value;
-                setText(String.format("%s - Due: %s, Course ID: %d%s", quiz.getName(), quiz.getDueDate(), quiz.getCourseId(), quiz.isDone() ? " (Finished)" : ""));
+                setText(String.format("%s - Due: %s, Course ID: %d", quiz.getName(), quiz.getDueDate(), quiz.getCourseId()));
                 setForeground(quiz.isDone() ? Color.GRAY : Color.BLACK);
                 return this;
             }
@@ -68,7 +70,7 @@ public class StudentQuizView extends JPanel implements QuizCompletionListener {
     private void startSelectedQuiz(ActionEvent e) {
         Quiz selectedQuiz = quizList.getSelectedValue();
         if (selectedQuiz != null && !selectedQuiz.isDone()) {
-            QuizTakingView quizTakingView = new QuizTakingView(selectedQuiz, new AnswerController(), quizController);
+            QuizTakingView quizTakingView = new QuizTakingView(selectedQuiz, new AnswerController(), quizController, userId);
             quizTakingView.setVisible(true);
         } else if (selectedQuiz != null) {
             JOptionPane.showMessageDialog(this, "This quiz has already been completed.", "Quiz Unavailable", JOptionPane.ERROR_MESSAGE);
@@ -89,12 +91,21 @@ public class StudentQuizView extends JPanel implements QuizCompletionListener {
     }
 
     private void loadQuizzes() {
+        quizListModel.removeAllElements();  // Clear existing quizzes from the list model
         List<Quiz> quizzes = quizController.getAllQuizzes();  // Fetch quizzes from the controller
+
+        if (quizzes.isEmpty()) {
+            System.out.println("No quizzes found.");  // Debugging output
+        }
+
+        // Iterate through each quiz and only add it to the list if it's active
         for (Quiz quiz : quizzes) {
             if (quiz.isActive()) {  // Check if the quiz is active
                 quizListModel.addElement(quiz);  // Only add active quizzes
+                System.out.println("Loaded quiz: " + quiz.getName());  // Debugging output for active quizzes
+            } else {
+                System.out.println("Inactive quiz not loaded: " + quiz.getName());  // Debugging output for inactive quizzes
             }
         }
-        quizList.revalidate();
-    }        
+    }
 }

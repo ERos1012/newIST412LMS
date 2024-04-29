@@ -11,9 +11,12 @@ import java.util.List;
 
 public class QuizController {
     // Database configuration
-    private static final String URL = "jdbc:mysql://localhost:3306/412lms?useSSL=false";
+    private static final String HOSTNAME = "localhost";
+    private static final int PORT = 3306;
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "kathricz2003";
+    private static final String PASSWORD = "$Qqhollowpsu45";
+    private static final String DATABASE_NAME = "412lms";
+    private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME + "?useSSL=false";
     private CourseController courseController;
     private List<QuizCompletionListener> quizCompletionListeners = new ArrayList<>();
 
@@ -123,8 +126,7 @@ public class QuizController {
                     rs.getString("name"),
                     rs.getString("dueDate"),
                     questions,
-                    rs.getBoolean("isActive"),
-                    rs.getBoolean("isDone")
+                    rs.getBoolean("isActive")
                 );
                 quizzes.add(quiz);
                 // Print details of each quiz fetched to the console for debugging
@@ -213,24 +215,24 @@ public class QuizController {
      */
     public Quiz viewQuiz(Quiz quiz) {
         if (quiz == null) {
-            return new Quiz(0, 0, "Default Quiz", "2024-01-01", new ArrayList<>(), true, false);
+            return new Quiz(0, 0, "Default Quiz", "2024-01-01", new ArrayList<>(), true);
         }
         // logic for retrieving and returning a Quiz object
         return quiz;
     }
 
-    public void markQuizAsCompleted(int quizId) {
-        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-             PreparedStatement pstmt = con.prepareStatement("UPDATE quiz SET isDone = TRUE WHERE id = ?")) {
-            pstmt.setInt(1, quizId);
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                notifyQuizCompletion(); // Notify after successfully marking the quiz as done
-            }
-        } catch (SQLException e) {
-            System.err.println("Error marking quiz as done: " + e.getMessage());
-        }
-    }
+//    public void markQuizAsCompleted(int quizId) {
+//        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+//             PreparedStatement pstmt = con.prepareStatement("UPDATE quiz SET isDone = TRUE WHERE id = ?")) {
+//            pstmt.setInt(1, quizId);
+//            int affectedRows = pstmt.executeUpdate();
+//            if (affectedRows > 0) {
+//                notifyQuizCompletion(); // Notify after successfully marking the quiz as done
+//            }
+//        } catch (SQLException e) {
+//            System.err.println("Error marking quiz as done: " + e.getMessage());
+//        }
+//    }
     
     private void notifyQuizCompletion() {
         for (QuizCompletionListener listener : quizCompletionListeners) {
@@ -282,8 +284,7 @@ public class QuizController {
                         rs.getString("name"),
                         rs.getString("dueDate"),
                         new ArrayList<>(),
-                        rs.getBoolean("isActive"),
-                        rs.getBoolean("isDone")
+                        rs.getBoolean("isActive")
                     );
                 }
             }

@@ -67,10 +67,13 @@ public class MainView extends JFrame {
                     cardLayout.show(cardsPanel, "Dashboard");
                 } else if (userType.equals("student")) {
                     cardLayout.show(cardsPanel, "StudentDashboard");
+                    JPanel studentCourseView = new StudentCourseView(new CourseController(), userId);
+                    cardsPanel.add(studentCourseView, "StudentCourse");
+                    JPanel studentQuizView = new StudentQuizView(new QuizController(), userId);
+                    cardsPanel.add(studentQuizView, "StudentQuiz");
                 }
 
-                JPanel studentCourseView = new StudentCourseView(new CourseController(), userId);
-                cardsPanel.add(studentCourseView, "StudentCourse");
+
                 // Show the navigation panel after login
                 navigationPanel.setVisible(true);
             }
@@ -95,9 +98,7 @@ public class MainView extends JFrame {
         // Instantiate and add quiz views for both teacher and student
         QuizController quizController = new QuizController();
         JPanel teacherQuizView = new TeacherQuizView(quizController);
-        JPanel studentQuizView = new StudentQuizView(quizController);
         cardsPanel.add(teacherQuizView, "TeacherQuiz");
-        cardsPanel.add(studentQuizView, "StudentQuiz");
 
         // Instantiate and add student views
         JPanel studentDashboardView = new StudentDashboardView();
@@ -108,8 +109,8 @@ public class MainView extends JFrame {
         JPanel studentGradeView = new StudentGradeView(new Model.Grade());
         cardsPanel.add(studentGradeView, "StudentGrade");
 
-        // JPanel studentQuizView = new StudentQuizView();
-        // cardsPanel.add(studentQuizView, "StudentQuiz");
+//         JPanel studentQuizView = new StudentQuizView();
+//         cardsPanel.add(studentQuizView, "StudentQuiz");
 
         // Set action listeners to switch views based on user type
         dashboardButton.addActionListener(e -> {
@@ -185,7 +186,6 @@ public class MainView extends JFrame {
 
     private void setupViewSwitchers(JButton dashboardButton, JButton courseButton, JButton gradeButton, JButton quizButton, JButton messageButton) {
         dashboardButton.addActionListener(e -> cardLayout.show(cardsPanel, userType.equals("teacher") ? "Dashboard" : "StudentDashboard"));
-        courseButton.addActionListener(e -> cardLayout.show(cardsPanel, userType.equals("teacher") ? "Course" : "StudentCourse"));
         gradeButton.addActionListener(e -> cardLayout.show(cardsPanel, userType.equals("teacher") ? "Grade" : "StudentGrade"));
         quizButton.addActionListener(e -> cardLayout.show(cardsPanel, userType.equals("teacher") ? "Quiz" : "StudentQuiz"));
         messageButton.addActionListener(e -> showMessageView());

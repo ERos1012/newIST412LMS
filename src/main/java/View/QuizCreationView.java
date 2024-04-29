@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import Controller.QuizController;
 import Model.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -38,9 +39,11 @@ public class QuizCreationView extends JFrame {
     }
 
     private void initializeUI() {
+        LocalDate today = LocalDate.now();
+        String todayDate = today.toString();
         JPanel formPanel = new JPanel(new GridLayout(0, 2, 10, 10));
         quizNameField = new JTextField(20);
-        dueDateField = new JTextField(10);
+        dueDateField = new JTextField(todayDate, 10);
 
         courseSelector = new JComboBox<>();
        populateCourseSelector();
@@ -118,7 +121,7 @@ public class QuizCreationView extends JFrame {
         }
     
         if (currentQuiz == null || currentQuiz.getId() <= 0) {
-            currentQuiz = new Quiz(0, courseId, quizName, dueDate, new ArrayList<>(), false, false); // Create a quiz with or without a course
+            currentQuiz = new Quiz(0, courseId, quizName, dueDate, new ArrayList<>(), false); // Create a quiz with or without a course
             currentQuiz = quizController.addQuiz(currentQuiz);
         } else {
             currentQuiz.setCourseId(courseId);

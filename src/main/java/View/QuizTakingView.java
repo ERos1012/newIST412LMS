@@ -27,16 +27,13 @@ public class QuizTakingView extends JFrame {
     private AnswerController answerController;
     private QuizController quizController;
     private List<QuizCompletionListener> listeners = new ArrayList<>();
+    private int userId;
 
-    public QuizTakingView(Quiz quiz, AnswerController answerController, QuizController quizController) {
-        if (quiz.isDone()) {
-            JOptionPane.showMessageDialog(null, "You have already taken this quiz.", "Quiz Unavailable",
-                    JOptionPane.ERROR_MESSAGE);
-            return; // Exit the constructor to prevent the quiz window from opening
-        }
+    public QuizTakingView(Quiz quiz, AnswerController answerController, QuizController quizController, int userId) {
         this.quiz = quiz;
         this.answerController = answerController;
         this.quizController = quizController;
+        this.userId = userId;
         initializeUI();
     }
 
@@ -130,7 +127,7 @@ public class QuizTakingView extends JFrame {
 
             // Save the answer using AnswerController
             Question currentQuestion = quiz.getQuestions().get(currentQuestionIndex);
-            Answer answer = new Answer(0, currentQuestion.getQuestionId(), 0, selectedAnswer, false); // Simplified
+            Answer answer = new Answer(0, currentQuestion.getQuestionId(), this.userId, selectedAnswer, false); // Simplified
             answerController.saveAnswer(answer);
 
             currentQuestionIndex++;
@@ -149,7 +146,6 @@ public class QuizTakingView extends JFrame {
     }
 
     private void endQuiz() {
-        quizController.markQuizAsCompleted(quiz.getId());
         notifyQuizCompletion();
         JOptionPane.showMessageDialog(this, "You have completed the quiz!", "Quiz Completed",
                 JOptionPane.INFORMATION_MESSAGE);
@@ -163,10 +159,10 @@ public class QuizTakingView extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        Quiz quiz = new Quiz(1, 0, "Sample Quiz", "2021-01-01", null, true, false);
-        AnswerController answerController = new AnswerController();
-        QuizController quizController = new QuizController();
-        new QuizTakingView(quiz, answerController, quizController);
-    }
+//    public static void main(String[] args) {
+//        Quiz quiz = new Quiz(1, 0, "Sample Quiz", "2021-01-01", null, true);
+//        AnswerController answerController = new AnswerController();
+//        QuizController quizController = new QuizController();
+//        new QuizTakingView(quiz, answerController, quizController, this.userId);
+//    }
 }
