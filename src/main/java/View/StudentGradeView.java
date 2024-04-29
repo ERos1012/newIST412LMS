@@ -1,66 +1,51 @@
+// StudentGradeView.java
 package View;
 
+import java.util.List;
 import javax.swing.*;
-
 import Controller.GradeController;
 import Model.Grade;
 
-/**
- * The GradeView class represents a graphical user interface for displaying grade details.
- */
 public class StudentGradeView extends JPanel {
-    private JLabel idLabel;
     private JLabel studentIdLabel;
-    private JLabel courseIdLabel;
-    private JLabel gradeLabel;
+    private JTextArea gradeTextArea; // Use JTextArea for multiline text
     private GradeController gradeController;
 
-    /**
-     * Constructs a new GradeView object.
-     */
-    public StudentGradeView(Grade grade) {
+    public StudentGradeView() {
         super();
-        // Initialize the GradeController
         gradeController = new GradeController();
-
-        // Initialize labels
-        idLabel = new JLabel("ID: ");
         studentIdLabel = new JLabel("Student ID: ");
-        courseIdLabel = new JLabel("Course ID: ");
-        gradeLabel = new JLabel("Grade: ");
+        gradeTextArea = new JTextArea(10, 20); // Rows, Columns
+        gradeTextArea.setEditable(false); // Make it read-only
 
-        // Create a panel to hold the labels
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(idLabel);
         panel.add(studentIdLabel);
-        panel.add(courseIdLabel);
-        panel.add(gradeLabel);
-
-        // Add the panel to the frame
+        panel.add(new JScrollPane(gradeTextArea)); // Add a scroll pane for long grades list
         add(panel);
-
-        // Retrieve grade details from the controller and update labels
-        updateGradeDetails(grade);
     }
 
-    /**
-     * Updates the labels with grade details.
-     */
-    private void updateGradeDetails(Grade grade) {
-        Grade updateGrade = gradeController.viewGrade(grade); // Assuming this method retrieves grade details from the controller
-        idLabel.setText("ID: " + grade.getId());
-        studentIdLabel.setText("Student ID: " + grade.getStudentId());
-        courseIdLabel.setText("Course ID: " + grade.getCourseId());
-        gradeLabel.setText("Grade: " + grade.getGrade());
+    public void updateStudentGrades(int studentId) {
+        List<Grade> grades = gradeController.getGradesForStudent(studentId);
+        if (!grades.isEmpty()) {
+            StringBuilder gradeText = new StringBuilder();
+            for (Grade grade : grades) {
+                gradeText.append("Course ID: ").append(grade.getCourseId()).append(", Grade: ").append(grade.getGrade()).append("\n");
+            }
+            gradeTextArea.setText(gradeText.toString().trim()); // Set text in the text area
+            studentIdLabel.setText("Student ID: " + studentId);
+        } else {
+            gradeTextArea.setText("N/A"); // Show N/A if no grades
+            studentIdLabel.setText("Student ID: " + studentId);
+        }
     }
 
-    /**
-     * The main method to launch the GradeView.
-     *
-     * @param args the command-line arguments
-     */
+    // Add a method to refresh the view after assigning a grade
+    public void refresh(int studentId) {
+        updateStudentGrades(studentId);
+    }
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new StudentGradeView(null));
+        SwingUtilities.invokeLater(() -> new StudentGradeView());
     }
 }

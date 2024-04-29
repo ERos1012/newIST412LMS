@@ -3,6 +3,7 @@ package View;
 import javax.swing.*;
 
 import Controller.CourseController;
+import Controller.GradeController;
 import Controller.LoginController;
 import Controller.QuizController;
 
@@ -92,7 +93,13 @@ public class MainView extends JFrame {
         JPanel courseView = new CourseView(new CourseController());
         cardsPanel.add(courseView, "Course");
 
-        JPanel gradeView = new GradeView(new Model.Grade());
+        // Instantiate GradeController
+        GradeController gradeController = new GradeController();
+
+        // Create GradeView with GradeController
+        JPanel gradeView = new GradeView(gradeController);
+
+        // Add gradeView to cardsPanel
         cardsPanel.add(gradeView, "Grade");
 
         // Instantiate and add quiz views for both teacher and student
@@ -106,7 +113,7 @@ public class MainView extends JFrame {
 
 
 
-        JPanel studentGradeView = new StudentGradeView(new Model.Grade());
+        JPanel studentGradeView = new StudentGradeView();
         cardsPanel.add(studentGradeView, "StudentGrade");
 
 //         JPanel studentQuizView = new StudentQuizView();
