@@ -1,75 +1,62 @@
 package Controller;
 
-import Model.Grade;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import Model.Grade;
 
-/**
- * The GradeController class manages grades in the system.
- */
 public class GradeController {
+    private static final String HOSTNAME = "localhost";
+    private static final int PORT = 3306;
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "Darkless@1228";
+    private static final String DATABASE_NAME = "412lms";
+    private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME + "?useSSL=false";
 
-    /**
-     * Adds a new grade to the system.
-     * @param grade
-     */
-    public void addGrade(Grade grade) {
+    public void assignGrade(int studentId, int courseId, int gradeValue) {
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+            String sql = "INSERT INTO grades (student_id, course_id, grade) VALUES (?, ?, ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, studentId);
+                pstmt.setInt(2, courseId);
+                pstmt.setInt(3, gradeValue);
+                int rowsAffected = pstmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Grade assigned successfully.");
+                } else {
+                    System.out.println("Failed to assign grade.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * Removes an existing grade from the system.
-     * @param grade
-     */
-    public void removeGrade(Grade grade) {
-    }
-
-    /**
-     * Updates an existing grade in the system.
-     * @param grade
-     * @param newGradeValue
-     */
-    public void updateGrade(Grade grade, double newGradeValue) {
-    }
-
-    /**
-     * Views details of a specific grade.
-     */
-    public Grade viewGrade(Grade grade) {
-        // demo
-       return grade;
-    }
-
-    /**
-     * View a specific quiz grade for a particular student
-     * @param studentId
-     * @param courseID
-     * @param quizId
-     * @return
-     */
-    public int viewQuizGrade(int studentId, int courseID, int quizId)
-    {
-        // Code to get quiz grade from the system
-        // Demo grade value
-        int grade = 85;
-        return grade;
-    }
-
-    /**
-     * view all grades for a course for a particular student
-     * @param studentId
-     * @param CourseID
-     * @return
-     */
-    public List<Integer> viewCourseGrades(int studentId, int CourseID)
-    {
-        // Code to get all grades for the specified course from the system
-        List<Integer> grades = new ArrayList<>();
-        // Demo grade values
-        grades.add(80);
-        grades.add(75);
-        grades.add(90);
+    public List<Grade> getGradesForStudent(int studentId) {
+        List<Grade> grades = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+            String sql = "SELECT * FROM grades WHERE student_id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, studentId);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    while (rs.next()) {
+                        Grade grade = new Grade(
+                                rs.getInt("id"),
+                                rs.getInt("student_id"),
+                                rs.getInt("course_id"),
+                                rs.getInt("grade")
+                        );
+                        grades.add(grade);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return grades;
     }
-
 }
