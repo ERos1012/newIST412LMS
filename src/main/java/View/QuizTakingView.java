@@ -138,11 +138,28 @@ public class QuizTakingView extends JFrame {
     }
 
     private String getSelectedAnswer() {
-        return Collections.list(choicesGroup.getElements()).stream()
-                .filter(AbstractButton::isSelected)
-                .findFirst()
-                .map(AbstractButton::getText)
-                .orElse(null);
+        Question currentQuestion = quiz.getQuestions().get(currentQuestionIndex);
+
+        if (currentQuestion instanceof MultipleChoiceQuestion || currentQuestion instanceof TrueOrFalseQuestion) {
+            return Collections.list(choicesGroup.getElements())
+                    .stream()
+                    .filter(AbstractButton::isSelected)
+                    .findFirst()
+                    .map(AbstractButton::getText)
+                    .orElse(null);
+        } else if (currentQuestion instanceof EssayQuestion) {
+            Component[] components = choicesPanel.getComponents();
+            for (Component component : components) {
+                if (component instanceof JScrollPane) {
+                    JScrollPane scrollPane = (JScrollPane) component;
+                    JViewport viewport = scrollPane.getViewport();
+                    JTextArea textArea = (JTextArea) viewport.getView();
+                    return textArea.getText();
+                }
+            }
+        }
+
+        return null; // Return null if no answer is selected
     }
 
     private void endQuiz() {
