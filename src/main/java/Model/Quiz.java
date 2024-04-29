@@ -13,18 +13,29 @@ public class Quiz {
     private String name;
     private String dueDate;
     private List<Question> questions;
-    private boolean isActive;  // Flag to indicate if the quiz is active or not
+    private boolean isActive;  
+    private boolean isDone;
+
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public void setDone(boolean done) {
+        isDone = done;
+    }
+
 
     /**
      * Constructs a new Quiz object with the specified details and active status.
      */
-    public Quiz(int id, int courseId, String name, String dueDate, List<Question> questions, boolean isActive) {
+    public Quiz(int id, int courseId, String name, String dueDate, List<Question> questions, boolean isActive, boolean isDone) {
         this.id = id;
         this.courseId = courseId;
         this.name = name;
         this.dueDate = dueDate;
         this.questions = (questions == null) ? new ArrayList<>() : questions;
-        this.isActive = isActive;  // Initialize the isActive flag during construction
+        this.isActive = isActive;  
+        this.isDone = isDone;
     }
 
     // Existing getter and setter methods
@@ -45,7 +56,8 @@ public class Quiz {
                 ", name='" + name + '\'' +
                 ", dueDate='" + dueDate + '\'' +
                 ", questionsCount=" + questions.size() +
-                ", isActive=" + isActive; // Include isActive in the toString output
+                ", isActive=" + isActive +
+                ", isDone=" + isDone;
     }
 
     // Getter methods remain unchanged, but getQuestions now returns List<Question>

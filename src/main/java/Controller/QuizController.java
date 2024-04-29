@@ -14,13 +14,21 @@ public class QuizController {
     private static final String URL = "jdbc:mysql://localhost:3306/412lms?useSSL=false";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "kathricz2003";
+    private CourseController courseController;
+    private List<QuizCompletionListener> quizCompletionListeners = new ArrayList<>();
+
 
     public QuizController() {
+        this.courseController = new CourseController(); 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             System.err.println("MySQL JDBC Driver not found: " + e.getMessage());
         }
+    }
+
+    public CourseController getCourseController() {
+        return courseController;
     }
 
     public Quiz addOrUpdateQuiz(Quiz quiz) {
@@ -32,14 +40,16 @@ public class QuizController {
     }
 
     public Quiz addQuiz(Quiz quiz) {
-        final String sql = "INSERT INTO quiz (courseId, name, dueDate, isActive) VALUES (?, ?, ?, ?);";
+        final String sql = "INSERT INTO quiz (courseId, name, dueDate, isActive, isDone) VALUES (?, ?, ?, ?, ?);";
         quiz.setActive(true);
+        quiz.setDone(false);
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setInt(1, quiz.getCourseId());
             pstmt.setString(2, quiz.getName());
             pstmt.setString(3, quiz.getDueDate());
             pstmt.setBoolean(4, quiz.isActive());
+            pstmt.setBoolean(5, quiz.isDone());
             pstmt.executeUpdate();
 
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
@@ -54,6 +64,22 @@ public class QuizController {
             return null;
         }
     }
+
+    public boolean canTakeQuiz(int quizId) {
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement("SELECT isDone FROM quiz WHERE id = ?")) {
+            pstmt.setInt(1, quizId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return !rs.getBoolean("isDone");  // returns true if the quiz is not done
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error checking if quiz can be taken: " + e.getMessage());
+        }
+        return false; // Default to false if unable to determine
+    }
+    
 
     public Quiz updateQuiz(Quiz quiz) {
         final String sql = "UPDATE quiz SET courseId = ?, name = ?, dueDate = ?, isActive = ? WHERE id = ?;";
@@ -85,7 +111,7 @@ public class QuizController {
 
     public List<Quiz> getAllQuizzes() {
         List<Quiz> quizzes = new ArrayList<>();
-        final String sql = "SELECT id, courseId, name, dueDate, isActive FROM quiz;";
+        final String sql = "SELECT id, courseId, name, dueDate, isActive, isDone FROM quiz;";
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = con.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
@@ -97,7 +123,8 @@ public class QuizController {
                     rs.getString("name"),
                     rs.getString("dueDate"),
                     questions,
-                    rs.getBoolean("isActive")
+                    rs.getBoolean("isActive"),
+                    rs.getBoolean("isDone")
                 );
                 quizzes.add(quiz);
                 // Print details of each quiz fetched to the console for debugging
@@ -180,17 +207,36 @@ public class QuizController {
     }
     
     
+    
      /**
      * Views details of a specific quiz.
      */
     public Quiz viewQuiz(Quiz quiz) {
         if (quiz == null) {
-            return new Quiz(0, 0, "Default Quiz", "2024-01-01", new ArrayList<>(), true);
+            return new Quiz(0, 0, "Default Quiz", "2024-01-01", new ArrayList<>(), true, false);
         }
         // logic for retrieving and returning a Quiz object
         return quiz;
     }
 
+    public void markQuizAsCompleted(int quizId) {
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement("UPDATE quiz SET isDone = TRUE WHERE id = ?")) {
+            pstmt.setInt(1, quizId);
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                notifyQuizCompletion(); // Notify after successfully marking the quiz as done
+            }
+        } catch (SQLException e) {
+            System.err.println("Error marking quiz as done: " + e.getMessage());
+        }
+    }
+    
+    private void notifyQuizCompletion() {
+        for (QuizCompletionListener listener : quizCompletionListeners) {
+            listener.quizCompleted();
+        }
+    }
 
     /**
      * Assigns a grade to a quiz for a student
@@ -208,6 +254,48 @@ public class QuizController {
                 System.err.println("Error adding question to quiz: " + e.getMessage());
             }
         }
+    }
+
+    public void refreshQuizList() {
+        String sql = "SELECT * FROM quiz";
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                System.out.println("Quiz ID: " + rs.getInt("id") + ", Name: " + rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error refreshing quiz list: " + e.getMessage());
+        }        
+    }
+
+    public Quiz getSelectedQuiz() {
+       String sql = "SELECT * FROM quiz WHERE id = ?";
+        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setInt(1, 1);  // Assuming the selected quiz ID is 1
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Quiz(
+                        rs.getInt("id"),
+                        rs.getInt("courseId"),
+                        rs.getString("name"),
+                        rs.getString("dueDate"),
+                        new ArrayList<>(),
+                        rs.getBoolean("isActive"),
+                        rs.getBoolean("isDone")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching selected quiz: " + e.getMessage());
+        }
+        return null;
+    }
+
+    // Register a quiz completion listener
+    public void addQuizCompletionListener(QuizCompletionListener listener) {
+        quizCompletionListeners.add(listener);
     }
     
 }

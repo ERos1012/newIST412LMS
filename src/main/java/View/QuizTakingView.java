@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import Model.Quiz;
@@ -13,21 +14,29 @@ import Model.Answer;
 import Model.EssayQuestion;
 import Model.MultipleChoiceQuestion;
 import Controller.AnswerController;
+import Controller.QuizCompletionListener;
 import Controller.QuizController;
 
 public class QuizTakingView extends JFrame {
     private Quiz quiz;
-    private static int currentQuestionIndex = 0;
+    private int currentQuestionIndex = 0; // Changed from static to instance variable
     private JLabel questionLabel;
     private JPanel choicesPanel;
     private ButtonGroup choicesGroup;
     private JButton nextButton;
     private AnswerController answerController;
+    private QuizController quizController;
+    private List<QuizCompletionListener> listeners = new ArrayList<>();
 
-
-    public QuizTakingView(Quiz quiz, AnswerController answerController) {
+    public QuizTakingView(Quiz quiz, AnswerController answerController, QuizController quizController) {
+        if (quiz.isDone()) {
+            JOptionPane.showMessageDialog(null, "You have already taken this quiz.", "Quiz Unavailable",
+                    JOptionPane.ERROR_MESSAGE);
+            return; // Exit the constructor to prevent the quiz window from opening
+        }
         this.quiz = quiz;
         this.answerController = answerController;
+        this.quizController = quizController;
         initializeUI();
     }
 
@@ -41,7 +50,7 @@ public class QuizTakingView extends JFrame {
         questionLabel.setFont(new Font("Serif", Font.BOLD, 16));
 
         choicesPanel = new JPanel();
-        choicesPanel.setLayout(new GridLayout(5, 1));  // 5 possible choices, change as needed
+        choicesPanel.setLayout(new GridLayout(5, 1)); // 5 possible choices, change as needed
 
         nextButton = new JButton("Next Question");
         nextButton.addActionListener(this::handleNextQuestion);
@@ -58,7 +67,8 @@ public class QuizTakingView extends JFrame {
     private void loadQuestion() {
         if (currentQuestionIndex < quiz.getQuestions().size()) {
             Question currentQuestion = quiz.getQuestions().get(currentQuestionIndex);
-            questionLabel.setText("<html>Q" + (currentQuestionIndex + 1) + ": " + currentQuestion.getText() + "</html>");
+            questionLabel
+                    .setText("<html>Q" + (currentQuestionIndex + 1) + ": " + currentQuestion.getText() + "</html>");
 
             switch (currentQuestion.getClass().getSimpleName()) {
                 case "MultipleChoiceQuestion":
@@ -102,13 +112,14 @@ public class QuizTakingView extends JFrame {
 
     private void loadEssayQuestion(EssayQuestion question) {
         choicesPanel.removeAll();
-        JTextArea textArea = new JTextArea(5, 20);
+        JTextArea textArea = new JTextArea(5, 30);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         JScrollPane scrollPane = new JScrollPane(textArea);
         choicesPanel.add(scrollPane);
     }
-        private void handleNextQuestion(ActionEvent e) {
+
+    private void handleNextQuestion(ActionEvent e) {
         if (currentQuestionIndex < quiz.getQuestions().size()) {
             // Get selected answer
             String selectedAnswer = getSelectedAnswer();
@@ -124,26 +135,38 @@ public class QuizTakingView extends JFrame {
 
             currentQuestionIndex++;
             loadQuestion();
+        } else {
+            endQuiz();
         }
     }
 
     private String getSelectedAnswer() {
-    return Collections.list(choicesGroup.getElements()).stream()
-        .filter(AbstractButton::isSelected)
-        .findFirst()
-        .map(AbstractButton::getText)
-        .orElse(null);
-}
+        return Collections.list(choicesGroup.getElements()).stream()
+                .filter(AbstractButton::isSelected)
+                .findFirst()
+                .map(AbstractButton::getText)
+                .orElse(null);
+    }
 
+    private void endQuiz() {
+        quizController.markQuizAsCompleted(quiz.getId());
+        notifyQuizCompletion();
+        JOptionPane.showMessageDialog(this, "You have completed the quiz!", "Quiz Completed",
+                JOptionPane.INFORMATION_MESSAGE);
+        dispose();
+        currentQuestionIndex = 0; // Reset the index for future quizzes
+    }
 
-private void endQuiz() {
-    JOptionPane.showMessageDialog(this, "You have completed the quiz!", "Quiz Completed", JOptionPane.INFORMATION_MESSAGE);
-    dispose();  // Close the quiz window
-}
+    private void notifyQuizCompletion() {
+        for (QuizCompletionListener listener : listeners) {
+            listener.quizCompleted();
+        }
+    }
 
-    public static void main (String[] args) {
-        Quiz quiz = new Quiz(1, currentQuestionIndex, "Quiz 1", "Description", null, true);
+    public static void main(String[] args) {
+        Quiz quiz = new Quiz(1, 0, "Sample Quiz", "2021-01-01", null, true, false);
         AnswerController answerController = new AnswerController();
-        new QuizTakingView(quiz, answerController);
+        QuizController quizController = new QuizController();
+        new QuizTakingView(quiz, answerController, quizController);
     }
 }
