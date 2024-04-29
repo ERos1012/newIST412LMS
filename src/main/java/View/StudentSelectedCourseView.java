@@ -11,10 +11,12 @@ import View.StudentAssignmentView;
 public class StudentSelectedCourseView extends JPanel {
     private final AssignmentController assignmentController;
     private Course course;
+    private int userId;
 
-    public StudentSelectedCourseView(Course course, AssignmentController assignmentController) {
+    public StudentSelectedCourseView(Course course, AssignmentController assignmentController, int userId) {
         this.course = course;
         this.assignmentController = assignmentController;
+        this.userId = userId;
         setLayout(new BorderLayout());
         initializeUI();
     }
@@ -49,7 +51,7 @@ public class StudentSelectedCourseView extends JPanel {
     private void switchToCourseView() {
         // Create a new instance of CourseView
         CourseController courseController = new CourseController();  // Assuming you can create a new instance of CourseController
-        StudentCourseView studentCourseView = new StudentCourseView(courseController);
+        StudentCourseView studentCourseView = new StudentCourseView(courseController, this.userId);
 
         // Replace the current panel with the SelectedCourseView
         removeAll();
@@ -62,7 +64,7 @@ public class StudentSelectedCourseView extends JPanel {
     private void switchToAssignmentListView(Course course) {
         // Create a new instance of AssignmentListView
         AssignmentController assignmentController = new AssignmentController();
-        StudentAssignmentView studentAssignmentView = new StudentAssignmentView(assignmentController, course);
+        StudentAssignmentView studentAssignmentView = new StudentAssignmentView(this.userId, assignmentController, course);
 
         // Replace the current view with the new instance of AssignmentListView
         removeAll();
@@ -70,6 +72,7 @@ public class StudentSelectedCourseView extends JPanel {
         add(studentAssignmentView, BorderLayout.CENTER);
         revalidate();
         repaint();
+        System.out.println(userId);
     }
 
 }

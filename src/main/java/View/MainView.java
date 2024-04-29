@@ -38,18 +38,18 @@ public class MainView extends JFrame {
 
         // Buttons for each view
         JButton dashboardButton = new JButton("Dashboard");
-        JButton courseButton = new JButton("Course");
-        JButton gradeButton = new JButton("Grade");
-        JButton messageButton = new JButton("Message");
-        JButton quizButton = new JButton("Quiz");
+        JButton courseButton = new JButton("Courses");
+        JButton gradeButton = new JButton("Grades");
+        JButton messageButton = new JButton("Messages");
+        JButton quizButton = new JButton("Quizzes");
         JButton logoutButton = new JButton("Logout");
 
         // Add buttons to the navigation panel
         navigationPanel.add(dashboardButton);
         navigationPanel.add(courseButton);
         navigationPanel.add(gradeButton);
-        navigationPanel.add(messageButton);
         navigationPanel.add(quizButton);
+        navigationPanel.add(messageButton);
         navigationPanel.add(logoutButton);
 
         LoginController loginController = new LoginController();
@@ -69,6 +69,8 @@ public class MainView extends JFrame {
                     cardLayout.show(cardsPanel, "StudentDashboard");
                 }
 
+                JPanel studentCourseView = new StudentCourseView(new CourseController(), userId);
+                cardsPanel.add(studentCourseView, "StudentCourse");
                 // Show the navigation panel after login
                 navigationPanel.setVisible(true);
             }
@@ -101,8 +103,7 @@ public class MainView extends JFrame {
         JPanel studentDashboardView = new StudentDashboardView();
         cardsPanel.add(studentDashboardView, "StudentDashboard");
 
-        JPanel studentCourseView = new StudentCourseView(new CourseController());
-        cardsPanel.add(studentCourseView, "StudentCourse");
+
 
         JPanel studentGradeView = new StudentGradeView(new Model.Grade());
         cardsPanel.add(studentGradeView, "StudentGrade");
@@ -124,6 +125,7 @@ public class MainView extends JFrame {
                 cardLayout.show(cardsPanel, "Course");
             } else if (userType.equals("student")) {
                 cardLayout.show(cardsPanel, "StudentCourse");
+                System.out.println(this.userId);
             }
         });
 
@@ -141,7 +143,7 @@ public class MainView extends JFrame {
         messageButton.addActionListener(e -> {
             if (userType.equals("teacher")) {
                 // Create a new instance of MessageView
-                MessageView messageView = new MessageView();
+                MessageView messageView = new MessageView(userId, userType);
 
                 // Show the MessageView as a modal dialog
                 JDialog dialog = new JDialog(MainView.this, "Message", true);
@@ -151,7 +153,7 @@ public class MainView extends JFrame {
                 dialog.setVisible(true);
             } else if (userType.equals("student")) {
                 // Create a new instance of MessageView
-                StudentMessageView studentMessageView = new StudentMessageView();
+                StudentMessageView studentMessageView = new StudentMessageView(userId, userType);
 
                 // Show the MessageView as a modal dialog
                 JDialog dialog = new JDialog(MainView.this, "Message", true);

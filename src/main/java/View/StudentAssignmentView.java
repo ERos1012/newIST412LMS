@@ -16,13 +16,17 @@ public class StudentAssignmentView extends JPanel {
     private JTable activeCoursesTable;
     private DefaultTableModel activeCoursesTableModel;
     private Course course;
+    private int userId;
 
-    public StudentAssignmentView(AssignmentController manager, Course course) {
+
+    public StudentAssignmentView(int userId, AssignmentController manager, Course course) {
         this.manager = manager;
         this.course = course;
+        this.userId = userId;
         setLayout(new BorderLayout());
         initializeUI();
     }
+
 
     private void initializeUI() {
         // Header
@@ -64,7 +68,7 @@ public class StudentAssignmentView extends JPanel {
 
     private void switchToSelectedCourseView(Course course) {
         AssignmentController assignmentController = new AssignmentController();
-        StudentSelectedCourseView studentSelectedCourseView = new StudentSelectedCourseView(course, assignmentController);
+        StudentSelectedCourseView studentSelectedCourseView = new StudentSelectedCourseView(course, assignmentController, this.userId);
 
         // Replace the current panel with the SelectedCourseView
         removeAll();
@@ -77,7 +81,7 @@ public class StudentAssignmentView extends JPanel {
     private void switchToCourseView() {
         // Create a new instance of CourseView
         CourseController courseController = new CourseController(); // Assuming you can create a new instance of CourseController
-        StudentCourseView studentCourseView = new StudentCourseView(courseController);
+        StudentCourseView studentCourseView = new StudentCourseView(courseController, this.userId);
 
         // Replace the current panel with the CourseView
         removeAll();
@@ -96,19 +100,17 @@ public class StudentAssignmentView extends JPanel {
     }
 
     private void handleSubmitAssignment() {
-        // Create a dialog for the student to enter their ID and submission details
+        // Create a dialog for the student to enter their submission details
         JPanel dialogPanel = new JPanel(new GridLayout(0, 1));
 
-        // Create a text field for the student to input their ID
-        dialogPanel.add(new JLabel("Enter your student ID:"));
-        JTextField studentIdField = new JTextField(20);
-        dialogPanel.add(studentIdField);
+        // Remove the prompt for student ID and use the stored user ID directly
 
         // Create a text area for the student to enter their submission text
         dialogPanel.add(new JLabel("Enter your submission:"));
         JTextArea submissionTextArea = new JTextArea(5, 20);
         JScrollPane scrollPane = new JScrollPane(submissionTextArea);
         dialogPanel.add(scrollPane);
+        System.out.println(this.userId);
 
         // Display the dialog
         int option = JOptionPane.showConfirmDialog(
@@ -121,24 +123,8 @@ public class StudentAssignmentView extends JPanel {
 
         // If the student clicked OK
         if (option == JOptionPane.OK_OPTION) {
-            // Retrieve the student ID and submission text
-            String studentIdText = studentIdField.getText();
+            // Retrieve the submission text
             String submissionText = submissionTextArea.getText();
-
-            // Check if student ID is not empty
-            if (studentIdText.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please enter your student ID.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Parse student ID
-            int studentId;
-            try {
-                studentId = Integer.parseInt(studentIdText);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Invalid student ID format.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
 
             // Get the selected assignment
             int selectedRow = activeCoursesTable.getSelectedRow();
@@ -147,6 +133,9 @@ public class StudentAssignmentView extends JPanel {
                 return;
             }
             int assignmentId = (int) activeCoursesTableModel.getValueAt(selectedRow, 0);
+
+            // Use the stored user ID directly (assume `userId` is a field in this class)
+            int studentId = userId; // Replace the previous user input with the stored user ID
 
             // Check if there is already a submission for the student, assignment, and course
             boolean hasSubmitted = manager.hasExistingSubmission(studentId, assignmentId, course.getId());
@@ -159,6 +148,12 @@ public class StudentAssignmentView extends JPanel {
             // Create an AssignmentSubmission object
             AssignmentSubmission submission = new AssignmentSubmission();
 
+            // Populate the AssignmentSubmission object
+            submission.setStudentId(this.userId); // Use the automatically provided user ID
+            submission.setAssignmentId(assignmentId);
+            submission.setCourseId(course.getId());
+            submission.setTextSubmission(submissionText);
+
             // Call the AssignmentController's submitAssignment method with the submission object
             manager.submitAssignment(submission);
 
@@ -166,6 +161,5 @@ public class StudentAssignmentView extends JPanel {
             JOptionPane.showMessageDialog(this, "Assignment submitted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         }
     }
-
 
 }

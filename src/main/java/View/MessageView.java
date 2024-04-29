@@ -31,6 +31,7 @@ public class MessageView extends JPanel {
         setupMessagePanels();
         add(navigationPanel, BorderLayout.NORTH);
         add(cardsPanel, BorderLayout.CENTER);
+        System.out.println("message view ID: " + userId);
     }
 
     private JPanel setupNavigationPanel() {
@@ -78,10 +79,10 @@ public class MessageView extends JPanel {
     }
 
     private void setupCreateMessagePanel() {
-        JPanel createMessagePanel = new JPanel(new GridLayout(6, 2));  // Adjust grid layout for additional dropdown
+        JPanel createMessagePanel = new JPanel(new GridLayout(6, 2));
         recipientIdField = new JTextField();
         messageBodyField = new JTextArea(5, 20);
-        receiverTypeComboBox = new JComboBox<>(new String[]{"student", "teacher"});  // Dropdown to select receiver type
+        receiverTypeComboBox = new JComboBox<>(new String[]{"student", "teacher"});
 
         JButton sendButton = new JButton("Send Message");
 

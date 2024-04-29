@@ -16,7 +16,7 @@ public class AssignmentSubmission {
         this.textSubmission = textSubmission;
     }
 
-    public AssignmentSubmission() {
+    public AssignmentSubmission(){
 
     }
 
@@ -52,6 +52,10 @@ public class AssignmentSubmission {
 
     public void setCourseId(int courseId) {
         this.courseId = courseId;
+    }
+
+    public void setTextSubmission() {
+         this.textSubmission = textSubmission;
     }
 
     public String getTextSubmission() {

@@ -12,7 +12,7 @@ import Model.Assignment;
 import Model.Course;
 import View.AssignmentSubmissionsView;
 import View.SelectedCourseView;
-import View.StudentCourseView;
+import View.CourseView;
 import View.StudentSelectedCourseView;
 
 public class AssignmentListView extends JPanel {
@@ -127,12 +127,12 @@ public class AssignmentListView extends JPanel {
     private void switchToCourseView() {
         // Create a new instance of CourseView
         CourseController courseController = new CourseController();  // Assuming you can create a new instance of CourseController
-        StudentCourseView studentCourseView = new StudentCourseView(courseController);
+        CourseView courseView = new CourseView(courseController);
 
         // Replace the current panel with the SelectedCourseView
         removeAll();
         setLayout(new BorderLayout());
-        add(studentCourseView, BorderLayout.CENTER);
+        add(courseView, BorderLayout.CENTER);
         revalidate();
         repaint();
     }

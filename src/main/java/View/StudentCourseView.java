@@ -16,8 +16,11 @@ public class StudentCourseView extends JPanel {
     private DefaultListModel<Course> listModel;
     private JTable activeCoursesTable;
     private DefaultTableModel activeCoursesTableModel;
+    private int userId;
 
-    public StudentCourseView(CourseController manager) {
+    public StudentCourseView(CourseController manager, int userId) {
+        super();
+        this.userId = userId;
         this.manager = manager;
         this.listModel = new DefaultListModel<>();
         setLayout(new BorderLayout());
@@ -30,6 +33,8 @@ public class StudentCourseView extends JPanel {
         JLabel headerLabel = new JLabel("Your Courses", JLabel.CENTER);
         headerLabel.setFont(new Font("Arial", Font.BOLD, 16));
         add(headerLabel, BorderLayout.NORTH);
+
+        System.out.println("student course view ID: " + userId);
 
         // Panel for buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -100,7 +105,7 @@ public class StudentCourseView extends JPanel {
             Course course = manager.getCourse(id);
             if (course != null) {
                 // Create a new SelectedCourseView instance with the selected course
-                StudentSelectedCourseView studentSelectedCourseView = new StudentSelectedCourseView(course, assignmentController);
+                StudentSelectedCourseView studentSelectedCourseView = new StudentSelectedCourseView(course, assignmentController, this.userId);
 
                 // Replace the current panel with the SelectedCourseView
                 removeAll();
@@ -108,6 +113,7 @@ public class StudentCourseView extends JPanel {
                 add(studentSelectedCourseView, BorderLayout.CENTER);
                 revalidate();
                 repaint();
+                System.out.println(userId);
             } else {
                 JOptionPane.showMessageDialog(this, "Course not found!", "Error", JOptionPane.ERROR_MESSAGE);
             }

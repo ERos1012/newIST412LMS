@@ -1,5 +1,10 @@
 # IST412 - Group 4: Learning Management System
 
+Logout button is added to main navigation bar, allowing user to return to the login view and entering different credentials
+if necessary
+
+
+
 ## M04-A03 Two Implemented Use Cases Integrated with First Usecase + Login/Authentication Implementation with Clean, Refactored Code
 
 ### Part 1

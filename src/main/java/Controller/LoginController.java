@@ -11,7 +11,7 @@ public class LoginController {
     private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME;
 
     private String userType = ""; // Field to keep track of user type (teacher or student)
-
+    private int userId = -1;
     /**
      * Checks if the username and password match in the Authentication table.
      * If a match is found, sets the user type to "teacher".

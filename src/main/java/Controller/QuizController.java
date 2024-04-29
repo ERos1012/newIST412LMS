@@ -14,8 +14,8 @@ public class QuizController {
     private static final String HOSTNAME = "localhost";
     private static final int PORT = 3306;
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "$Qqhollow45";
-    private static final String DATABASE_NAME = "412lms"; 
+    private static final String PASSWORD = "$Qqhollowpsu45";
+    private static final String DATABASE_NAME = "412lms";
     private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME + "?useSSL=false";
 
     public QuizController() {
@@ -115,6 +115,8 @@ public class QuizController {
         }
         return quizzes;
     }
+    
+    // Other methods remain unchanged
 
     private void addQuizQuestions(int quizId, List<Question> questions) {
         final String sql = "INSERT INTO quiz_questions (quiz_id, question_text, type) VALUES (?, ?, ?);";
