@@ -69,7 +69,7 @@ public class MessageView extends JPanel {
             java.util.List<Message> messages = messageController.getAllMessagesForUser(this.userId, this.userType);
             DefaultListModel<String> model = new DefaultListModel<>();
             for (Message message : messages) {
-                model.addElement("From: " + message.getSenderId() + " - " + message.getContent());
+                model.addElement("From: " + messageController.getSenderName(message.getSenderId(), message.getSenderType()) + " - " + message.getContent());
             }
             messageList.setModel(model);
         });

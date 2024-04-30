@@ -13,7 +13,7 @@ public class GradeController {
     private static final String HOSTNAME = "localhost";
     private static final int PORT = 3306;
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "Darkless@1228";
+    private static final String PASSWORD = "$Qqhollowpsu45";
     private static final String DATABASE_NAME = "412lms";
     private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME + "?useSSL=false";
 
@@ -59,4 +59,43 @@ public class GradeController {
         }
         return grades;
     }
+
+    public String getCourseName(int courseId) {
+        String courseName = null;
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+            String sql = "SELECT name FROM Courses WHERE id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, courseId);
+
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        courseName = rs.getString("name");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return courseName;
+    }
+
+    public String getUsername(int studentId) {
+        String username = null;
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+            String sql = "SELECT username FROM StudentAuthentication WHERE id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, studentId);
+                // Execute the query and get the result set
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        username = rs.getString("username");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return username;
+    }
+
 }

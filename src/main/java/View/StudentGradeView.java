@@ -1,51 +1,71 @@
-// StudentGradeView.java
 package View;
 
-import java.util.List;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.util.List;
 import Controller.GradeController;
 import Model.Grade;
 
 public class StudentGradeView extends JPanel {
-    private JLabel studentIdLabel;
-    private JTextArea gradeTextArea; // Use JTextArea for multiline text
+    private JLabel userIdLabel;
+    private JTable gradesTable;
+    private DefaultTableModel gradesTableModel;
     private GradeController gradeController;
+    private int userId; // Current user ID
 
-    public StudentGradeView() {
+    public StudentGradeView(int userId) {
         super();
+        this.userId = userId;
         gradeController = new GradeController();
-        studentIdLabel = new JLabel("Student ID: ");
-        gradeTextArea = new JTextArea(10, 20); // Rows, Columns
-        gradeTextArea.setEditable(false); // Make it read-only
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(studentIdLabel);
-        panel.add(new JScrollPane(gradeTextArea)); // Add a scroll pane for long grades list
-        add(panel);
+        setLayout(new BorderLayout());
+        initializeUI();
     }
 
-    public void updateStudentGrades(int studentId) {
-        List<Grade> grades = gradeController.getGradesForStudent(studentId);
+    private void initializeUI() {
+        // Initialize the user ID label
+        userIdLabel = new JLabel("User ID: " + userId);
+        add(userIdLabel, BorderLayout.NORTH);
+
+        // Initialize the grades table and its model
+        gradesTableModel = new DefaultTableModel();
+        gradesTableModel.addColumn("Course ID");
+        gradesTableModel.addColumn("Grade");
+
+        gradesTable = new JTable(gradesTableModel);
+
+        // Add the table inside a JScrollPane to allow scrolling
+        JScrollPane scrollPane = new JScrollPane(gradesTable);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Initial update of the student's grades
+        updateStudentGrades();
+    }
+
+    public void updateStudentGrades() {
+        // Fetch grades for the given user ID using GradeController
+        List<Grade> grades = gradeController.getGradesForStudent(this.userId);
+
+        // Clear existing rows in the table model
+        gradesTableModel.setRowCount(0);
+
+        // Check if there are grades available for the student
         if (!grades.isEmpty()) {
-            StringBuilder gradeText = new StringBuilder();
+            // Iterate through the list of grades and add them to the table model
             for (Grade grade : grades) {
-                gradeText.append("Course ID: ").append(grade.getCourseId()).append(", Grade: ").append(grade.getGrade()).append("\n");
+                gradesTableModel.addRow(new Object[]{gradeController.getCourseName(grade.getCourseId()), grade.getGrade()});
             }
-            gradeTextArea.setText(gradeText.toString().trim()); // Set text in the text area
-            studentIdLabel.setText("Student ID: " + studentId);
         } else {
-            gradeTextArea.setText("N/A"); // Show N/A if no grades
-            studentIdLabel.setText("Student ID: " + studentId);
+            // If there are no grades available, you can add a row with "N/A"
+            gradesTableModel.addRow(new Object[]{"N/A", "N/A"});
         }
+
+        // Update the user ID label with the current user ID
+        userIdLabel.setText("User: " + gradeController.getUsername(userId));
     }
 
-    // Add a method to refresh the view after assigning a grade
-    public void refresh(int studentId) {
-        updateStudentGrades(studentId);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new StudentGradeView());
+    // Add a refresh method to update the table with the current user's grades
+    public void refresh() {
+        updateStudentGrades();
     }
 }

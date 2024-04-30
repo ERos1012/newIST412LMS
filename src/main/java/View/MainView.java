@@ -72,6 +72,8 @@ public class MainView extends JFrame {
                     cardsPanel.add(studentCourseView, "StudentCourse");
                     JPanel studentQuizView = new StudentQuizView(new QuizController(), userId);
                     cardsPanel.add(studentQuizView, "StudentQuiz");
+                    JPanel studentGradeView = new StudentGradeView(userId);
+                    cardsPanel.add(studentGradeView, "StudentGrade");
                 }
 
 
@@ -112,9 +114,6 @@ public class MainView extends JFrame {
         cardsPanel.add(studentDashboardView, "StudentDashboard");
 
 
-
-        JPanel studentGradeView = new StudentGradeView();
-        cardsPanel.add(studentGradeView, "StudentGrade");
 
 //         JPanel studentQuizView = new StudentQuizView();
 //         cardsPanel.add(studentQuizView, "StudentQuiz");

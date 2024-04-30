@@ -14,7 +14,7 @@ public class AssignmentController {
     private static final String HOSTNAME = "localhost";
     private static final int PORT = 3306;
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "Darkless@1228";
+    private static final String PASSWORD = "$Qqhollowpsu45";
     private static final String DATABASE_NAME = "412lms";
     private static final String URL = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE_NAME;
 
