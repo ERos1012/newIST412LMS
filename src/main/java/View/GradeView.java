@@ -1,66 +1,82 @@
 package View;
 
 import javax.swing.*;
-
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import Controller.GradeController;
-import Model.Grade;
+import Controller.GradeSubmissionHandler;
 
-/**
- * The GradeView class represents a graphical user interface for displaying grade details.
- */
 public class GradeView extends JPanel {
-    private JLabel idLabel;
-    private JLabel studentIdLabel;
-    private JLabel courseIdLabel;
-    private JLabel gradeLabel;
-    private GradeController gradeController;
+    private JTextField studentIdField;
+    private JTextField courseIdField;
+    private JTextField gradeField;
+    private JButton assignButton;
 
-    /**
-     * Constructs a new GradeView object.
-     */
-    public GradeView(Grade grade) {
-        super();
-        // Initialize the GradeController
-        gradeController = new GradeController();
+    private GradeSubmissionHandler submissionHandler;
 
-        // Initialize labels
-        idLabel = new JLabel("ID: ");
-        studentIdLabel = new JLabel("Student ID: ");
-        courseIdLabel = new JLabel("Course ID: ");
-        gradeLabel = new JLabel("Grade: ");
+    public GradeView(GradeController gradeController) {
+        super(new BorderLayout());
+        // Initialize the GradeSubmissionHandler
+        submissionHandler = new GradeSubmissionHandler(gradeController);
 
-        // Create a panel to hold the labels
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(idLabel);
-        panel.add(studentIdLabel);
-        panel.add(courseIdLabel);
-        panel.add(gradeLabel);
+        // Input fields for student ID, course ID, and grade
+        JPanel inputPanel = new JPanel(new GridLayout(3, 2));
+        inputPanel.add(new JLabel("Student ID:"));
+        studentIdField = new JTextField();
+        inputPanel.add(studentIdField);
+        inputPanel.add(new JLabel("Course ID:"));
+        courseIdField = new JTextField();
+        inputPanel.add(courseIdField);
+        inputPanel.add(new JLabel("Grade:"));
+        gradeField = new JTextField();
+        inputPanel.add(gradeField);
 
-        // Add the panel to the frame
-        add(panel);
+        // Assign button to assign grade
+        assignButton = new JButton("Assign Grade");
+        assignButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                assignGrade();
+            }
+        });
 
-        // Retrieve grade details from the controller and update labels
-        updateGradeDetails(grade);
+        // Add input panel and assign button to the main panel
+        add(inputPanel, BorderLayout.CENTER);
+        add(assignButton, BorderLayout.SOUTH);
     }
 
     /**
-     * Updates the labels with grade details.
+     * Assigns a grade to the student.
      */
-    private void updateGradeDetails(Grade grade) {
-        Grade updateGrade = gradeController.viewGrade(grade); // Assuming this method retrieves grade details from the controller
-        idLabel.setText("ID: " + grade.getId());
-        studentIdLabel.setText("Student ID: " + grade.getStudentId());
-        courseIdLabel.setText("Course ID: " + grade.getCourseId());
-        gradeLabel.setText("Grade: " + grade.getGrade());
+    private void assignGrade() {
+        try {
+            int studentId = Integer.parseInt(studentIdField.getText());
+            int courseId = Integer.parseInt(courseIdField.getText());
+            int gradeValue = Integer.parseInt(gradeField.getText());
+
+            // Call the GradeSubmissionHandler to submit the grade
+            submissionHandler.submitGrade(studentId, courseId, gradeValue);
+
+            // Display a success message
+            JOptionPane.showMessageDialog(this, "Grade assigned successfully.");
+
+            // Clear the input fields after assigning the grade
+            studentIdField.setText("");
+            courseIdField.setText("");
+            gradeField.setText("");
+        } catch (NumberFormatException ex) {
+            // Display an error message if the input is not valid
+            JOptionPane.showMessageDialog(this, "Please enter valid values for Student ID, Course ID, and Grade.");
+        }
     }
 
     /**
      * The main method to launch the GradeView.
-     * 
+     *
      * @param args the command-line arguments
      */
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new StudentGradeView(null));
+        SwingUtilities.invokeLater(() -> new GradeView(new GradeController()));
     }
 }

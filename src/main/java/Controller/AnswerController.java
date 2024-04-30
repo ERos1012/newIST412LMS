@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class AnswerController {
     private static final String DB_URL = "jdbc:mysql://localhost:3306/412lms?useSSL=false";
     private static final String USER = "root";
-    private static final String PASS = "$Qqhollowpsu45";
+    private static final String PASS = "Darkless@1228";
 
     public AnswerController() {
         // Optionally initialize database connection
