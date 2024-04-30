@@ -6,7 +6,6 @@ import java.awt.*;
 import Controller.CourseController;
 import Controller.AssignmentController;
 import Model.Course;
-import View.TeacherAssignment.AssignmentListView;
 
 public class SelectedCourseView extends JPanel {
     private final AssignmentController assignmentController;

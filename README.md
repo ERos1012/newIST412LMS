@@ -1,10 +1,107 @@
 # IST412 - Group 4: Learning Management System
 
-Logout button is added to main navigation bar, allowing user to return to the login view and entering different credentials
-if necessary
+## M05-A01 Final Project Implementation
 
 
+**Make sure you have the correct SQL database structure**
 
+**Run from the mainView**
+
+___
+**Login/Authentication:**
+
+Users can login using either teacher logins from the 'Authentication' table or student logins from the 
+'StudentAuthentication' table.
+
+
+**Current teacher logins:**
+
+| Username | Password |
+|----------|----------|
+| Eric     | Rosario  |
+| Kai      | Huang    |
+| Anish    | Nangare  |
+| Bryan    | Zhou     |
+
+**Current student logins:**
+
+| Username | Password |
+|----------|----------|
+| student  | password |
+| bqz5148  | password |
+
+- Teacher logins will allow you to traverse through the teacher flow
+- Student logins will allow you to traverse through the student flow
+
+classes involved: LoginController, LoginView
+___
+**Navigation:**
+
+The navigation bar at the top allows you to move through the application
+
+classes involved: MainView, DashboardView
+___
+**Courses:**
+
+Teacher
+- Teachers can create, update, remove, or view a selected course
+
+Student
+- Students may only view a selected course
+
+classes involved: Course, CourseController, CourseView, SelectedCourseView, StudentCourseView, StudentSelectedCourseView
+___
+**Assignments:**
+
+Teacher
+- Teachers can create, update, remove, or view submissions in the view assignments
+
+Student
+- Students may view assignments for a course, and submit an assignment. Only one submission per student
+
+classes involved: Assignment, Assignment Submission, AssignmentController, AssignmentListView, StudentAssignmentView, AssignmentSubmissionsView
+___
+
+**Grades:**
+
+Teacher
+- Teachers may assign grades for a student and course out of 100
+
+Student
+- Students may view their assigned grades for courses
+
+classes involved: Grade, GradeController, GradeSubmissionHandler, GradeView, GradeViewHandler, StudentGradeView
+___
+**Quizzes:**
+
+Teacher
+- Teachers may create quizzes that contain multiple choice, true or false, and essay/short response questions, as well as inputting the correct answer. They may also remove or update quizzes
+
+Student
+- Students may take quizzes, but they only have one attempt.
+
+classes involved: Quiz, Question, MultipleChoiceQuestion, TrueOrFalseQuestion, Answer, QuizController, AnswerController, QuizView, QuizCreationView, TeacherQuizView, StudentQuizView, QuizTakingView
+___
+**Messages**
+
+The message view has two components inbox and create a message. 
+If you go to create a message you can select the Id of the person you want 
+to send the message to, list the usertype and write a message. 
+The fields are collected and run through the message controller where we have functions to write the above information into the Database. You can then log into the user which you have sent messages to and check the inbox. Just click refresh and you can view the received messages.
+
+classes involved: Message, MessageController, MessageView, StudentMessageView
+
+___
+
+
+| Team-Member ID | Team-Member Name | Percentage Efforts in Particular Assignment | Brief of Efforts in the Tasks Contribution                                                                                                                           |
+|----------------|------------------|---------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| evr5419        | Eric Rosario     | 25%                                         | Created and implemented all Quiz functionality                                                                                                                       |
+| klh6157        | Kai Huang        | 25%                                         | Created and implemented part of the Grade functionality                                                                                                              |
+| agn5089        | Anish Nangare    | 25%                                         | Created the Universal ID and implemented the Messaging functionality                                                                                                 |
+| bqz5148        | Bryan Zhou       | 25%                                         | Implemented Universal ID in all necessary components, helped create, fix, and enhance all functionalities, handled all merging, and created this submission's readme |
+
+___
 ## M04-A03 Two Implemented Use Cases Integrated with First Usecase + Login/Authentication Implementation with Clean, Refactored Code
 
 ### Part 1
@@ -34,6 +131,8 @@ Messaging
 - Message controller connects with the buttons on message view to provide the needed calls to the database. 
   The message view creates a popup box that allows users to send and receive messages. There is the need to verify your id in the inbox. 
   once you have sent a message. you can check in the inbox by clicking refresh and entering Id and student.
+
+classes involved
 
 **Additional Use Case:**
 

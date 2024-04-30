@@ -9,7 +9,6 @@ import Controller.AssignmentController;
 import Model.Assignment;
 import Model.Course;
 import Model.AssignmentSubmission;
-import View.TeacherAssignment.AssignmentListView;
 
 public class AssignmentSubmissionsView extends JPanel {
     private final Course course;
